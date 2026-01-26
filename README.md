@@ -1,4 +1,4 @@
-# 🟥 AETHER 3D PRO: THE HAWKINS EXPERIMENT
+# 🟥 STRANGER THINGS 3D PRO: THE HAWKINS EXPERIMENT
 
 > **WARNING: CLASSIFIED DATA - HAWKINS NATIONAL LABORATORY** > **SUBJECT:** 001 - A touchless gateway into the Upside Down.
 
@@ -65,3 +65,4 @@ The system uses GPU-accelerated shaders to handle millions of particles in real-
 *If you see the lights flickering, close the browser immediately.* *Created by [GHOSTBOO]. Stay curious, Nerds!*
 
 ---
+
