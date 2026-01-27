@@ -25,24 +25,22 @@
             transform: scale(0.96);
         }
 
-        /* --- ENTRANCE OVERLAY STYLES --- */
-        .stranger-font { font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; }
-        .bulb-light {
-            position: absolute; width: 6px; height: 6px; background: #fef3c7; border-radius: 50%;
-            box-shadow: 0 0 20px 5px #f59e0b; animation: flicker 3s infinite;
+        /* --- ENTRANCE OVERLAY & MULTICOLOR BULBS --- */
+        #entrance-gate { background: radial-gradient(circle at center, #110000 0%, #000 100%); }
+        .bulb-string { display: flex; gap: 20px; position: absolute; top: 10%; width: 100%; justify-content: center; flex-wrap: wrap; }
+        .letter-bulb {
+            width: 15px; height: 15px; border-radius: 50%;
+            animation: rainbow-flicker var(--d) infinite;
         }
-        @keyframes flicker {
-            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; box-shadow: 0 0 20px 5px #f59e0b; }
-            20%, 24%, 55% { opacity: 0.2; box-shadow: none; }
+        @keyframes rainbow-flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; box-shadow: 0 0 15px 4px var(--color); background: var(--color); }
+            20%, 24%, 55% { opacity: 0.2; box-shadow: none; background: #333; }
         }
         #entrance-gate.fade-out { opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
         .glitch-btn:hover { animation: btn-glitch 0.3s infinite; }
         @keyframes btn-glitch {
             0% { transform: translate(0); }
             20% { transform: translate(-3px, 3px); }
-            40% { transform: translate(-3px, -3px); }
-            60% { transform: translate(3px, 3px); }
-            80% { transform: translate(3px, -3px); }
             100% { transform: translate(0); }
         }
     </style>
@@ -50,18 +48,22 @@
 <body>
 
     <div id="entrance-gate" class="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 opacity-40 pointer-events-none">
-            <div class="bulb-light" style="top:15%; left:10%"></div>
-            <div class="bulb-light" style="top:25%; right:15%"></div>
-            <div class="bulb-light" style="bottom:30%; left:20%"></div>
-            <div class="bulb-light" style="top:60%; right:25%"></div>
-            <div class="bulb-light" style="bottom:15%; right:12%"></div>
+        <div class="bulb-string px-10">
+            <div class="letter-bulb" style="--color: #ff0000; --d: 3s"></div>
+            <div class="letter-bulb" style="--color: #00ff00; --d: 2.5s"></div>
+            <div class="letter-bulb" style="--color: #0000ff; --d: 3.2s"></div>
+            <div class="letter-bulb" style="--color: #ffff00; --d: 2.8s"></div>
+            <div class="letter-bulb" style="--color: #ff00ff; --d: 3.5s"></div>
+            <div class="letter-bulb" style="--color: #00ffff; --d: 2.2s"></div>
+            <div class="letter-bulb" style="--color: #ffffff; --d: 3s"></div>
+            <div class="letter-bulb" style="--color: #ff8800; --d: 2.7s"></div>
         </div>
+
         <div class="relative z-10 text-center px-6">
-            <h2 class="stranger-font text-red-700 text-5xl md:text-8xl mb-12 filter drop-shadow-[0_0_25px_rgba(185,28,28,0.9)]">
+            <h2 class="font-black text-red-700 text-5xl md:text-8xl mb-12 uppercase tracking-tighter filter drop-shadow-[0_0_25px_rgba(185,28,28,0.9)]">
                 WELCOME TO THE<br>UPSIDE DOWN
             </h2>
-            <button onclick="enterTheRift()" class="glitch-btn px-12 py-5 border-4 border-red-800 text-red-600 font-black text-2xl hover:bg-red-800 hover:text-black transition-all duration-300 tracking-[0.4em] uppercase shadow-[0_0_30px_rgba(185,28,28,0.5)]">
+            <button onclick="enterTheRift()" class="glitch-btn px-12 py-5 border-4 border-red-800 text-red-600 font-black text-2xl hover:bg-red-800 hover:text-black transition-all duration-300 tracking-[0.4em] uppercase">
                 ENTER THE RIFT
             </button>
         </div>
@@ -78,7 +80,7 @@
         <div class="glass-panel p-8 rounded-[2.5rem] pointer-events-auto max-w-sm shadow-2xl">
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                <h1 class="text-xl font-black tracking-tight uppercase">Hawkins <span class="text-blue-500">Lab Pro</span></h1>
+                <h1 class="text-xl font-black tracking-tight uppercase italic">Hawkins <span class="text-blue-500">Lab Pro</span></h1>
             </div>
             
             <div class="bg-blue-500/5 border border-blue-500/20 p-5 rounded-3xl mb-8">
@@ -113,11 +115,11 @@
     <div id="asset-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/90 backdrop-blur-xl">
         <div class="glass-panel p-10 rounded-[3rem] w-full max-w-2xl border border-white/20 relative">
             <button onclick="closeAssetModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors">✕ CLOSE</button>
-            <h2 id="modal-title" class="text-blue-500 font-black text-sm uppercase tracking-[0.4em] mb-8 text-center">Select Asset</h2>
+            <h2 id="modal-title" class="text-blue-500 font-black text-sm uppercase tracking-[0.4em] mb-8 text-center tracking-widest">Select Asset</h2>
             <div class="grid grid-cols-4 gap-4 mb-10 max-h-[50vh] overflow-y-auto pr-2 no-scrollbar" id="modal-gallery"></div>
             <div class="flex justify-between items-center">
                 <p class="text-[9px] text-gray-500 tracking-widest uppercase">Target: <span id="mode-hint" class="text-blue-400">Single</span></p>
-                <button onclick="clearBatch()" id="clear-btn" class="hidden text-[9px] text-pink-500 hover:text-pink-400 tracking-widest uppercase font-bold">Purge Sequence</button>
+                <button onclick="closeAssetModal()" class="px-8 py-2 bg-blue-600 hover:bg-blue-500 rounded-full text-[11px] text-white tracking-widest uppercase font-black">OK: Confirm Selection</button>
             </div>
         </div>
     </div>
@@ -156,33 +158,28 @@
 
     <script>
         const CONFIG = { maxParticles: 4000000, samplingRes: 1024, lerpSpeed: 0.15, leftThreshold: 0.3, rightThreshold: 0.7, imageScale: 120 };
-        const ASSETS = [
+        const INITIAL_ASSETS = [
             "assets/Demogorgon.png", "assets/st.png", "assets/max.png", "assets/max1.png",
             "assets/st1.png", "assets/ell.png", "assets/m.png", "assets/all.png",
             "assets/n.png", "assets/el.png", "assets/ste.png", "assets/ds.png"
         ];
-
-        let scene, camera, renderer, particles, particleMaterial, imagePlane;
-        let hands, cameraUtils;
-        let targetDispersion = 0.5, currentDispersion = 1.0;
+        
+        let localAssets = []; // Store blob URLs of local uploaded files
+        let selectedPaths = new Map(); // Store { path: texture }
+        let rotateTextures = [];
         let isPresentationMode = false, currentModalMode = 'single';
-        let baseImageData = null, rotateTextures = [], currentRotateIndex = 0;
-        let lastHandX = 0.5, directionCooldown = false;
-        let selectedPaths = new Map();
+        let scene, camera, renderer, particles, particleMaterial, imagePlane;
+        let lastHandX = 0.5, directionCooldown = false, currentRotateIndex = 0;
 
-        // Gateway Logic
         function enterTheRift() {
             const gate = document.getElementById('entrance-gate');
             gate.classList.add('fade-out');
             setTimeout(() => gate.remove(), 1500);
         }
 
-        // Modal Logic
         function openAssetModal(mode) {
             currentModalMode = mode;
             document.getElementById('asset-modal').classList.remove('hidden');
-            document.getElementById('mode-hint').innerText = mode.toUpperCase();
-            document.getElementById('clear-btn').style.display = (mode === 'batch') ? 'block' : 'none';
             renderGallery();
         }
         function closeAssetModal() { document.getElementById('asset-modal').classList.add('hidden'); }
@@ -190,7 +187,11 @@
         function renderGallery() {
             const gallery = document.getElementById('modal-gallery');
             gallery.innerHTML = '';
-            ASSETS.forEach(src => {
+            
+            // Combine initial assets and local uploaded assets
+            const allAvailable = [...INITIAL_ASSETS, ...localAssets];
+            
+            allAvailable.forEach(src => {
                 const img = document.createElement('img');
                 img.src = src;
                 img.className = "w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover";
@@ -198,11 +199,19 @@
                 img.onclick = () => handleAssetClick(src, img);
                 gallery.appendChild(img);
             });
+
             const plus = document.createElement('div');
             plus.className = "w-full aspect-square rounded-2xl bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 hover:border-blue-500 transition-all relative";
-            plus.innerHTML = `<span class="text-3xl text-blue-500 font-thin">+</span><input type="file" id="local-upload" class="absolute inset-0 opacity-0 cursor-pointer" ${currentModalMode === 'batch' ? 'multiple' : ''}>`;
+            plus.innerHTML = `<span class="text-3xl text-blue-500 font-thin">+</span><input type="file" id="local-upload" class="absolute inset-0 opacity-0 cursor-pointer" multiple>`;
             gallery.appendChild(plus);
-            document.getElementById('local-upload').onchange = (e) => handleLocalUpload(e);
+
+            document.getElementById('local-upload').onchange = (e) => {
+                const files = Array.from(e.target.files);
+                files.forEach(f => {
+                    localAssets.push(URL.createObjectURL(f));
+                });
+                renderGallery(); // Re-render to show new items in gallery
+            };
         }
 
         async function handleAssetClick(src, el) {
@@ -219,32 +228,10 @@
                     el.classList.add('selected-asset');
                 }
                 rotateTextures = Array.from(selectedPaths.values());
-                document.getElementById('gesture-tag').innerText = `BATCH: ${rotateTextures.length}`;
             }
         }
 
-        async function handleLocalUpload(e) {
-            const files = Array.from(e.target.files);
-            if (files.length === 0) return;
-            if (currentModalMode === 'single') {
-                await loadPreset(URL.createObjectURL(files[0]));
-                closeAssetModal();
-            } else {
-                for (const f of files) {
-                    const url = URL.createObjectURL(f);
-                    const tex = await new THREE.TextureLoader().loadAsync(url);
-                    selectedPaths.set(url, tex);
-                }
-                rotateTextures = Array.from(selectedPaths.values());
-                renderGallery();
-            }
-        }
-
-        function clearBatch() {
-            rotateTextures = []; selectedPaths.clear(); renderGallery();
-        }
-
-        // 3D Engine
+        // --- 3D Core ---
         window.onload = async () => {
             initThree(); initMediaPipe(); generateInitialCloud();
             document.getElementById('loading').style.opacity = '0';
@@ -278,28 +265,23 @@
             const img = new Image();
             img.crossOrigin = "anonymous";
             img.onload = async () => {
-                baseImageData = await processImage(img);
-                createParticleSystem(baseImageData);
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const scale = Math.min(CONFIG.samplingRes / img.width, CONFIG.samplingRes / img.height);
+                canvas.width = img.width * scale; canvas.height = img.height * scale;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                const pixels = [];
+                for (let y = 0; y < canvas.height; y++) {
+                    for (let x = 0; x < canvas.width; x++) {
+                        const i = (y * canvas.width + x) * 4;
+                        if (data[i+3] > 128) pixels.push({ x: (x - canvas.width/2)*0.25, y: (canvas.height/2 - y)*0.25, r: data[i]/255, g: data[i+1]/255, b: data[i+2]/255 });
+                    }
+                }
+                createParticleSystem(pixels);
                 imagePlane.material.map = await new THREE.TextureLoader().loadAsync(url);
             };
             img.src = url;
-        }
-
-        async function processImage(img) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const scale = Math.min(CONFIG.samplingRes / img.width, CONFIG.samplingRes / img.height);
-            canvas.width = img.width * scale; canvas.height = img.height * scale;
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-            const pixels = [];
-            for (let y = 0; y < canvas.height; y++) {
-                for (let x = 0; x < canvas.width; x++) {
-                    const i = (y * canvas.width + x) * 4;
-                    if (data[i+3] > 128) pixels.push({ x: (x - canvas.width/2)*0.25, y: (canvas.height/2 - y)*0.25, r: data[i]/255, g: data[i+1]/255, b: data[i+2]/255 });
-                }
-            }
-            return pixels;
         }
 
         function createParticleSystem(pixels) {
@@ -345,7 +327,6 @@
                     const isFingersExtended = lm[8].y < lm[6].y && lm[12].y < lm[10].y && lm[16].y < lm[14].y;
                     const isFingersClosed = Math.abs(lm[8].x - lm[12].x) < 0.03 && Math.abs(lm[12].x - lm[16].x) < 0.03;
                     const isIndexUpOnly = lm[8].y < lm[6].y && lm[12].y > lm[10].y; 
-
                     if (isFingersExtended && isFingersClosed) {
                         tag.innerText = "CLOSED: SINGLE VIEW"; tag.style.background = "#ef4444";
                         if (particles) particles.visible = false; imagePlane.visible = true; isPresentationMode = true;
