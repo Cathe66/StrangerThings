@@ -11,7 +11,17 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
         
-        body { margin: 0; overflow: hidden; background-color: #000; color: white; font-family: 'Inter', sans-serif; }
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #000; 
+            color: white; 
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
         canvas { display: block; }
         .glass-panel { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; z-index: 100; transition: opacity 1s ease; }
@@ -152,8 +162,7 @@
     </script>
 
     <script>
-        // High Density Configuration
-        const CONFIG = { maxParticles: 4000000, samplingRes: 2048, lerpSpeed: 0.15, leftThreshold: 0.3, rightThreshold: 0.7, imageScale: 140 };
+        const CONFIG = { maxParticles: 4000000, samplingRes: 2048, lerpSpeed: 0.15, leftThreshold: 0.3, rightThreshold: 0.7, imageScale: 70 };
         const FIXED_ASSETS = [
              "assets/Demogorgon.png", "assets/st.png", "assets/max.png", "assets/billy.png","assets/vecna.png","assets/max1.jpg",
             "assets/st1.png", "assets/ell.png", "assets/m.png", "assets/all.png","assets/hm.png",
@@ -169,7 +178,6 @@
         let lastHandX = 0.5, directionCooldown = false;
         let selectedPaths = new Map();
 
-        // Alphabet Wall Background
         function initAlphabetBg() {
             const container = document.getElementById('alphabet-bg');
             const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -190,7 +198,6 @@
             setTimeout(() => gate.remove(), 1500);
         }
 
-        // Modal Logic
         function openAssetModal(mode) {
             currentModalMode = mode;
             document.getElementById('asset-modal').classList.remove('hidden');
@@ -302,8 +309,9 @@
                     const i = (y * canvas.width + x) * 4;
                     if (data[i+3] > 50) {
                         pixels.push({ 
-                            x: (x - canvas.width/2)*0.12, 
-                            y: (canvas.height/2 - y)*0.12, 
+                            // Reduced size: Multiplier changed from 0.12 to 0.06 to halve dimensions
+                            x: (x - canvas.width/2)*0.06, 
+                            y: (canvas.height/2 - y)*0.06, 
                             r: data[i]/255, g: data[i+1]/255, b: data[i+2]/255 
                         });
                     }
@@ -395,7 +403,24 @@
             renderer.render(scene, camera);
         }
     </script>
+
+    <script>
+
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+
+        document.onkeydown = function(e) {
+
+            if (e.keyCode == 123) return false;
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+            if (e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false;
+        };
+
+
+        document.onselectstart = function() { return false; };
+        document.oncopy = function() { return false; };
+    </script>
 </body>
 </html>
-
-
