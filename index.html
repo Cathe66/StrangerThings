@@ -133,14 +133,36 @@
 
 
         .ok-btn-inner {
-            font-size: 15px !important; font-weight: 900; letter-spacing: 5px; padding: 0.8rem 2rem !important;
-            border-radius: 5rem !important; border: none; background-color: #000; color: #fff; cursor: pointer; width: 5rem; text-transform: uppercase;
+            font-size: 15px !important; 
+            font-weight: 900; 
+            letter-spacing: 3px; 
+            padding: 0.8rem 2rem !important;
+            border-radius: 5rem !important;
+            border: none; 
+            background-color: #000; 
+            color: #fff; 
+            cursor: pointer;
+            width: 5rem;
+            text-transform: uppercase;
         }
         .ok-container {
-            position: relative; padding: 3px; background: linear-gradient(90deg, #03a9f4, #f441a5); border-radius: 5rem; transition: all 0.4s ease; display: inline-block;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3px; 
+            background: linear-gradient(90deg, #03a9f4, #f441a5); 
+            border-radius: 5rem; 
+            transition: all 0.4s ease;
+            display: inline-block;
         }
         .ok-container::before {
-            content: ""; position: absolute; inset: 0; margin: auto; border-radius: 5rem; z-index: -10; filter: blur(0); transition: filter 0.4s ease;
+            content: "";
+            position: absolute;
+            inset: 0; margin: auto; 
+            border-radius: 5rem;
+            z-index: -10; 
+            filter: blur(0);
+            transition: filter 0.4s ease;
         }
         .ok-container:hover::before { background: linear-gradient(90deg, #03a9f4, #f441a5); filter: blur(1.2em); }
 
@@ -481,5 +503,6 @@
     </script>
 </body>
 </html>
+
 
 
