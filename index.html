@@ -16,7 +16,6 @@
         .gesture-indicator { position: absolute; bottom: 15px; right: 15px; padding: 8px 18px; border-radius: 40px; font-size: 11px; font-weight: 900; box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        /* 选中图片的粉色边框样式 */
         .selected-asset {
             border: 4px solid #ff69b4 !important;
             box-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
@@ -75,7 +74,7 @@
             <h2 id="modal-title" class="text-blue-500 font-black text-sm uppercase tracking-[0.4em] mb-8 text-center">Select Asset</h2>
             
             <div class="grid grid-cols-4 gap-4 mb-10 max-h-[50vh] overflow-y-auto pr-2 no-scrollbar" id="modal-gallery">
-                </div>
+            </div>
             
             <div class="flex justify-between items-center">
                 <p class="text-[9px] text-gray-500 tracking-widest uppercase">Mode: <span id="mode-hint" class="text-blue-400">Single</span></p>
@@ -131,9 +130,8 @@
         let isPresentationMode = false, currentModalMode = 'single';
         let baseImageData = null, rotateTextures = [], currentRotateIndex = 0;
         let lastHandX = 0.5, directionCooldown = false;
-        let selectedPaths = new Set();
+        let selectedPaths = new Map(); // Using Map to store { path: texture } for easy removal
 
-        // --- UI Modal & Gallery Logic ---
         function openAssetModal(mode) {
             currentModalMode = mode;
             document.getElementById('asset-modal').classList.remove('hidden');
@@ -157,7 +155,6 @@
                 gallery.appendChild(img);
             });
 
-            // Local Upload Button (+)
             const plus = document.createElement('div');
             plus.className = "w-full aspect-square rounded-2xl bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 hover:border-blue-500 transition-all relative";
             plus.innerHTML = `<span class="text-3xl text-blue-500 font-thin">+</span><input type="file" id="local-upload" class="absolute inset-0 opacity-0 cursor-pointer" ${currentModalMode === 'batch' ? 'multiple' : ''}>`;
@@ -171,10 +168,18 @@
                 await loadPreset(src);
                 closeAssetModal();
             } else {
-                const tex = await new THREE.TextureLoader().loadAsync(src);
-                rotateTextures.push(tex);
-                selectedPaths.add(src);
-                el.classList.add('selected-asset');
+                if (selectedPaths.has(src)) {
+                    // UNDO LOGIC: Remove from selection
+                    selectedPaths.delete(src);
+                    el.classList.remove('selected-asset');
+                } else {
+                    // SELECT LOGIC: Add to selection
+                    const tex = await new THREE.TextureLoader().loadAsync(src);
+                    selectedPaths.set(src, tex);
+                    el.classList.add('selected-asset');
+                }
+                // Sync the actual textures array used by the 3D engine
+                rotateTextures = Array.from(selectedPaths.values());
                 document.getElementById('gesture-tag').innerText = `BATCH: ${rotateTextures.length}`;
             }
         }
@@ -187,11 +192,13 @@
                 closeAssetModal();
             } else {
                 for (const f of files) {
-                    const tex = await new THREE.TextureLoader().loadAsync(URL.createObjectURL(f));
-                    rotateTextures.push(tex);
+                    const url = URL.createObjectURL(f);
+                    const tex = await new THREE.TextureLoader().loadAsync(url);
+                    selectedPaths.set(url, tex); // Use blob URL as key for local files
                 }
+                rotateTextures = Array.from(selectedPaths.values());
                 document.getElementById('gesture-tag').innerText = `BATCH: ${rotateTextures.length}`;
-                closeAssetModal();
+                renderGallery(); // Re-render to show potential new local assets or updated states
             }
         }
 
@@ -289,7 +296,6 @@
             createParticleSystem(dots);
         }
 
-        // --- Gesture AI ---
         async function initMediaPipe() {
             const video = document.getElementById('input-video');
             const handCanvas = document.getElementById('hand-canvas');
@@ -303,8 +309,6 @@
                 ctx.drawImage(results.image, 0, 0, handCanvas.width, handCanvas.height);
                 if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                     const lm = results.multiHandLandmarks[0];
-                    
-                    // Closed Hand Detection Logic (Pressed Fingers)
                     const isFingersExtended = lm[8].y < lm[6].y && lm[12].y < lm[10].y && lm[16].y < lm[14].y;
                     const isFingersClosed = Math.abs(lm[8].x - lm[12].x) < 0.03 && Math.abs(lm[12].x - lm[16].x) < 0.03;
                     const isIndexUpOnly = lm[8].y < lm[6].y && lm[12].y > lm[10].y; 
@@ -332,6 +336,7 @@
         }
 
         function changePhoto(dir) {
+            if (rotateTextures.length === 0) return;
             directionCooldown = true;
             currentRotateIndex = (currentRotateIndex + dir + rotateTextures.length) % rotateTextures.length;
             imagePlane.material.map = rotateTextures[currentRotateIndex];
