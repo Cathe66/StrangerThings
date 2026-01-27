@@ -76,6 +76,7 @@
         .gif-container-left { position: absolute; bottom: 20px; left: 20px; width: 150px; z-index: 10; }
         .gif-container-right { position: absolute; bottom: 20px; right: 20px; width: 150px; z-index: 10; }
 
+
         .btn-starry {
             display: flex; justify-content: center; align-items: center;
             width: 100%; overflow: hidden; height: 3.5rem;
@@ -88,7 +89,7 @@
             position: relative;
         }
 
-        #container-stars {
+        .container-stars-wrap {
             position: absolute; z-index: -1; width: 100%; height: 100%;
             overflow: hidden; transition: 0.5s; backdrop-filter: blur(1rem); border-radius: 1rem;
         }
@@ -99,22 +100,23 @@
             text-transform: uppercase; font-weight: 900;
         }
 
-        #glow { position: absolute; display: flex; width: 100%; }
+        .btn-glow-layer { position: absolute; display: flex; width: 100%; }
         .circle { width: 100%; height: 30px; filter: blur(2rem); animation: pulse_3011 4s infinite; z-index: -1; }
         .circle:nth-of-type(1) { background: rgba(254, 83, 186, 0.636); }
         .circle:nth-of-type(2) { background: rgba(142, 81, 234, 0.704); }
 
-        .btn-starry:hover #container-stars { z-index: 1; background-color: #212121; }
+        .btn-starry:hover .container-stars-wrap { z-index: 1; background-color: #212121; }
         .btn-starry:hover { transform: scale(1.02); }
         .btn-starry:active { border: double 4px #fe53bb; animation: none; }
 
-        #stars { position: relative; background: transparent; width: 200rem; height: 200rem; }
-        #stars::after {
+        .stars-inner { position: relative; background: transparent; width: 200rem; height: 200rem; }
+        .stars-inner::after {
             content: ""; position: absolute; top: -10rem; left: -100rem;
             width: 100%; height: 100%; animation: animStarRotate 90s linear infinite;
             background-image: radial-gradient(#ffffff 1px, transparent 1%); background-size: 50px 50px;
         }
 
+        /* --- GLOW BORDER STYLE (For OK) --- */
         .ok-btn-inner {
             font-size: 12px !important;
             font-weight: 900;
@@ -125,7 +127,7 @@
             background-color: #000;
             color: #fff;
             cursor: pointer;
-            width: 5rem;
+            width: 13rem;
             text-transform: uppercase;
         }
 
@@ -209,16 +211,23 @@
                 </p>
             </div>
             <div class="space-y-4">
-                <button onclick="openAssetModal('single')" class="w-full bg-white/10 hover:bg-white/20 text-white transition-all py-4 rounded-2xl text-[11px] font-bold tracking-widest border border-white/10 uppercase">
-                    Single Image Mode
+                <button class="btn-starry" type="button" onclick="openAssetModal('single')">
+                    <strong class="btn-text-strong">Single Image Mode</strong>
+                    <div class="container-stars-wrap">
+                        <div class="stars-inner"></div>
+                    </div>
+                    <div class="btn-glow-layer">
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                    </div>
                 </button>
                 
                 <button class="btn-starry" type="button" onclick="openAssetModal('batch')">
-                    <strong class="btn-text-strong">Carousel Mode</strong>
-                    <div id="container-stars">
-                        <div id="stars"></div>
+                    <strong class="btn-text-strong">Batch Carousel Mode</strong>
+                    <div class="container-stars-wrap">
+                        <div class="stars-inner"></div>
                     </div>
-                    <div id="glow">
+                    <div class="btn-glow-layer">
                         <div class="circle"></div>
                         <div class="circle"></div>
                     </div>
@@ -229,18 +238,18 @@
             <div class="glass-panel p-2 rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden">
                 <video id="input-video" style="display:none"></video>
                 <canvas id="hand-canvas" width="220" height="165" class="rounded-[1.8rem]"></canvas>
-                <div id="gesture-tag" class="gesture-indicator bg-pink-300 text-white shadow-xl">READY</div>
+                <div id="gesture-tag" class="gesture-indicator bg-blue-600 text-white shadow-xl">READY</div>
             </div>
         </div>
     </div>
 
     <div id="asset-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/90 backdrop-blur-xl">
         <div class="glass-panel p-10 rounded-[3rem] w-full max-w-2xl border border-white/20 relative">
-            <button onclick="closeAssetModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors uppercase font-bold text-s tracking-widest">✕ </button>
+            <button onclick="closeAssetModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest">✕ Close</button>
             <h2 id="modal-title" class="text-blue-500 font-black text-sm uppercase tracking-[0.4em] mb-8 text-center">Select</h2>
             <div class="grid grid-cols-4 gap-4 mb-10 max-h-[50vh] overflow-y-auto pr-2 no-scrollbar" id="modal-gallery"></div>
             <div class="flex justify-between items-center">
-                <p class="text-[9px] text-gray-500 tracking-widest uppercase">Target Mode: <span id="mode-hint" class="text-pink-200">Single</span></p>
+                <p class="text-[9px] text-gray-500 tracking-widest uppercase">Target Mode: <span id="mode-hint" class="text-blue-400">Single</span></p>
                 
                 <div id="ok-btn" class="hidden">
                     <div class="ok-container">
@@ -495,5 +504,3 @@
     </script>
 </body>
 </html>
-
-
