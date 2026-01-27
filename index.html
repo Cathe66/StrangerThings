@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hawkins Lab System</title>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; color: white; font-family: 'Inter', sans-serif; }
         canvas { display: block; }
-        .glass-panel { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass-panel { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; z-index: 100; transition: opacity 1s ease; }
         .gesture-indicator { position: absolute; bottom: 15px; right: 15px; padding: 8px 18px; border-radius: 40px; font-size: 11px; font-weight: 900; box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        #modal-gallery { scrollbar-width: thin; scrollbar-color: rgba(59, 130, 246, 0.5) transparent; }
     </style>
 </head>
 <body>
@@ -33,56 +34,60 @@
                 <h1 class="text-xl font-black tracking-tight">Hawkins <span class="text-blue-500">LAB PRO</span></h1>
             </div>
             
-            <div class="bg-blue-500/5 border border-blue-500/20 p-5 rounded-3xl mb-6">
-                <p class="text-blue-400 font-bold text-[11px] mb-2 uppercase tracking-tighter">Gesture Control Specifications</p>
+            <div class="bg-blue-500/5 border border-blue-500/20 p-5 rounded-3xl mb-8">
+                <p class="text-blue-400 font-bold text-[11px] mb-2 uppercase tracking-tighter">Gesture Control Specs</p>
                 <p class="text-[10px] text-gray-400 leading-relaxed">
-                    - <b>Open Palm</b>: Expand & disperse particles<br>
-                    - <b>Clenched Fist</b>: Show single image (Mesh Mode)<br>
-                    - <b>Point Index</b>: Activate image carousel<br>
-                    - <b>Swipe Index</b>: Toggle carousel images (L/R)
+                    - <b>Open Palm</b>: Disperse Particles<br>
+                    - <b>Clenched Fist</b>: Show Single Image<br>
+                    - <b>Point Index</b>: Activate Carousel<br>
+                    - <b>Swipe Index</b>: Switch Images (L/R)
                 </p>
             </div>
 
-            <div class="mb-6">
-                <p class="text-blue-400 font-bold text-[10px] mb-3 uppercase tracking-widest">Lab Assets (Click to Load)</p>
-                <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2" id="preset-gallery">
-                    <img src="assets/Demogorgon.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                    <img src="assets/st.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                    <img src="assets/max.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                    <img src="assets/max1.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                    <img src="assets/st1.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                    <img src="assets/ell.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                    <img src="assets/m.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                    <img src="assets/all.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                    <img src="assets/n.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                    <img src="assets/el.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                    <img src="assets/ste.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                    <img src="assets/ds.png" class="w-14 h-14 rounded-xl cursor-pointer border border-white/10 hover:border-blue-500 transition-all object-cover" onclick="loadPreset(this.src)">
-                </div>
-            </div>
-            
-            <div class="space-y-3">
-                <div class="relative group">
-                    <input type="file" id="media-upload" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                    <div class="bg-white/10 group-hover:bg-white/20 text-white transition-all text-center py-3 rounded-2xl text-[11px] font-bold tracking-widest border border-white/10">
-                        UPLOAD CUSTOM IMAGE
-                    </div>
-                </div>
-                <div class="relative group">
-                    <input type="file" id="rotate-upload" accept="image/*" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                    <div class="bg-blue-600 group-hover:bg-blue-500 text-white transition-all text-center py-4 rounded-2xl text-[11px] font-black tracking-widest shadow-lg shadow-blue-900/40">
-                        UPLOAD BATCH CAROUSEL
-                    </div>
-                </div>
+            <div class="space-y-4">
+                <button onclick="openAssetModal('single')" class="w-full bg-white/10 hover:bg-white/20 text-white transition-all py-4 rounded-2xl text-[11px] font-bold tracking-widest border border-white/10">
+                    SINGLE IMAGE MODE
+                </button>
+                <button onclick="openAssetModal('batch')" class="w-full bg-blue-600 hover:bg-blue-500 text-white transition-all py-5 rounded-2xl text-[11px] font-black tracking-widest shadow-lg shadow-blue-900/40">
+                    BATCH CAROUSEL MODE
+                </button>
             </div>
         </div>
 
         <div class="flex flex-col items-end gap-6 pointer-events-auto">
-            <div class="glass-panel p-2 rounded-[2rem] border border-white/10 shadow-2xl">
+            <div class="glass-panel p-2 rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden">
                 <video id="input-video" style="display:none"></video>
                 <canvas id="hand-canvas" width="220" height="165" class="rounded-[1.8rem]"></canvas>
                 <div id="gesture-tag" class="gesture-indicator bg-blue-600 text-white shadow-xl">READY</div>
             </div>
+        </div>
+    </div>
+
+    <div id="asset-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/90 backdrop-blur-xl">
+        <div class="glass-panel p-10 rounded-[3rem] w-full max-w-2xl border border-white/20 relative">
+            <button onclick="closeAssetModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors">✕ CLOSE</button>
+            <h2 id="modal-title" class="text-blue-500 font-black text-sm uppercase tracking-[0.4em] mb-8 text-center">Select Asset</h2>
+            
+            <div class="grid grid-cols-4 gap-4 mb-10 max-h-[50vh] overflow-y-auto pr-2" id="modal-gallery">
+                <img src="assets/Demogorgon.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                <img src="assets/st.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                <img src="assets/max.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                <img src="assets/max1.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                <img src="assets/st1.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                <img src="assets/ell.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                <img src="assets/m.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                <img src="assets/all.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                <img src="assets/n.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                <img src="assets/el.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                <img src="assets/ste.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                <img src="assets/ds.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
+                
+                <div class="w-full aspect-square rounded-2xl bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 hover:border-blue-500 transition-all relative">
+                    <span class="text-3xl text-blue-500 font-thin">+</span>
+                    <input type="file" id="local-upload-input" class="absolute inset-0 opacity-0 cursor-pointer">
+                </div>
+            </div>
+            <p class="text-[9px] text-gray-500 text-center tracking-widest uppercase">System Restriction: <span id="mode-hint" class="text-blue-400">Single</span></p>
         </div>
     </div>
 
@@ -119,29 +124,53 @@
     </script>
 
     <script>
-        const CONFIG = {
-            maxParticles: 4000000, 
-            samplingRes: 1024,
-            lerpSpeed: 0.15,
-            leftThreshold: 0.3,
-            rightThreshold: 0.7,
-            imageScale: 120 
-        };
-
+        const CONFIG = { maxParticles: 4000000, samplingRes: 1024, lerpSpeed: 0.15, leftThreshold: 0.3, rightThreshold: 0.7, imageScale: 120 };
         let scene, camera, renderer, particles, particleMaterial, imagePlane;
         let hands, cameraUtils;
         let targetDispersion = 0.5, currentDispersion = 1.0;
-        let isPresentationMode = false;
-        let baseImageData = null;
-        let rotateTextures = [];
-        let currentRotateIndex = 0;
-        let lastHandX = 0.5;
-        let directionCooldown = false;
+        let isPresentationMode = false, currentModalMode = 'single';
+        let baseImageData = null, rotateTextures = [], currentRotateIndex = 0;
+        let lastHandX = 0.5, directionCooldown = false;
+
+        function openAssetModal(mode) {
+            currentModalMode = mode;
+            document.getElementById('asset-modal').classList.remove('hidden');
+            document.getElementById('modal-title').innerText = mode === 'single' ? "SINGLE SELECTION" : "BATCH SEQUENCE";
+            document.getElementById('mode-hint').innerText = mode.toUpperCase();
+            document.getElementById('local-upload-input').multiple = (mode === 'batch');
+        }
+        function closeAssetModal() { document.getElementById('asset-modal').classList.add('hidden'); }
+
+        async function handleAssetClick(src) {
+            if (currentModalMode === 'single') {
+                await loadPreset(src);
+                closeAssetModal();
+            } else {
+                const tex = await new THREE.TextureLoader().loadAsync(src);
+                rotateTextures.push(tex);
+                document.getElementById('gesture-tag').innerText = `ADDED: ${rotateTextures.length}`;
+            }
+        }
+
+        document.getElementById('local-upload-input').addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            if (currentModalMode === 'single') {
+                await loadPreset(URL.createObjectURL(files[0]));
+                closeAssetModal();
+            } else {
+                for (const f of files) {
+                    const tex = await new THREE.TextureLoader().loadAsync(URL.createObjectURL(f));
+                    rotateTextures.push(tex);
+                }
+                document.getElementById('gesture-tag').innerText = `LOADED: ${rotateTextures.length}`;
+                closeAssetModal();
+            }
+        });
 
         window.onload = async () => {
             initThree();
             initMediaPipe();
-            setupEvents();
             generateInitialCloud();
             document.getElementById('loading').style.opacity = '0';
             setTimeout(() => document.getElementById('loading').remove(), 1000);
@@ -155,37 +184,18 @@
             renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('main-canvas'), antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
-
             particleMaterial = new THREE.ShaderMaterial({
                 uniforms: { uTime: { value: 0 }, uDispersion: { value: 1.0 }, uPixelRatio: { value: renderer.getPixelRatio() } },
                 vertexShader: document.getElementById('vertexShader').textContent,
                 fragmentShader: document.getElementById('fragmentShader').textContent,
                 transparent: true, blending: THREE.NormalBlending, depthWrite: false
             });
-
-            const planeGeo = new THREE.PlaneGeometry(1, 1);
-            imagePlane = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({ transparent: true, side: THREE.DoubleSide }));
+            imagePlane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ transparent: true, side: THREE.DoubleSide }));
             imagePlane.visible = false;
             scene.add(imagePlane);
-        }
-
-        function setupEvents() {
             window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
+                camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-
-            document.getElementById('media-upload').addEventListener('change', async (e) => {
-                const file = e.target.files[0];
-                if (file) loadPreset(URL.createObjectURL(file));
-            });
-
-            document.getElementById('rotate-upload').addEventListener('change', async (e) => {
-                const files = Array.from(e.target.files);
-                rotateTextures = [];
-                const loader = new THREE.TextureLoader();
-                for (const f of files) rotateTextures.push(await loader.loadAsync(URL.createObjectURL(f)));
             });
         }
 
@@ -195,9 +205,7 @@
             img.onload = async () => {
                 baseImageData = await processImage(img);
                 createParticleSystem(baseImageData);
-                // Also update the single mesh mode texture
-                const loader = new THREE.TextureLoader();
-                imagePlane.material.map = await loader.loadAsync(url);
+                imagePlane.material.map = await new THREE.TextureLoader().loadAsync(url);
             };
             img.src = url;
         }
@@ -213,9 +221,7 @@
             for (let y = 0; y < canvas.height; y++) {
                 for (let x = 0; x < canvas.width; x++) {
                     const i = (y * canvas.width + x) * 4;
-                    if (data[i+3] > 128) {
-                        pixels.push({ x: (x - canvas.width/2)*0.25, y: (canvas.height/2 - y)*0.25, r: data[i]/255, g: data[i+1]/255, b: data[i+2]/255 });
-                    }
+                    if (data[i+3] > 128) pixels.push({ x: (x - canvas.width/2)*0.25, y: (canvas.height/2 - y)*0.25, r: data[i]/255, g: data[i+1]/255, b: data[i+2]/255 });
                 }
             }
             return pixels;
@@ -253,53 +259,35 @@
             const handCanvas = document.getElementById('hand-canvas');
             const ctx = handCanvas.getContext('2d');
             const tag = document.getElementById('gesture-tag');
-
             hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
             hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.8 });
-
             hands.onResults((results) => {
                 ctx.clearRect(0, 0, handCanvas.width, handCanvas.height);
-                ctx.save();
-                ctx.scale(-1, 1); ctx.translate(-handCanvas.width, 0);
+                ctx.save(); ctx.scale(-1, 1); ctx.translate(-handCanvas.width, 0);
                 ctx.drawImage(results.image, 0, 0, handCanvas.width, handCanvas.height);
-
                 if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                     const lm = results.multiHandLandmarks[0];
                     const isFist = lm[8].y > lm[6].y && lm[12].y > lm[10].y && lm[16].y > lm[14].y;
-                    const isIndexUp = lm[8].y < lm[6].y && lm[12].y > lm[10].y;
+                    const isIndexUp = lm[8].y < lm[6].y && lm[12].y > lm[10].y && lm[16].y > lm[14].y;
 
                     if (isFist) {
-                        tag.innerText = "FIST: MESH MODE";
-                        tag.style.background = "#ef4444";
-                        if (particles) particles.visible = false;
-                        imagePlane.visible = true;
-                        isPresentationMode = true;
+                        tag.innerText = "FIST: SINGLE VIEW"; tag.style.background = "#ef4444";
+                        if (particles) particles.visible = false; imagePlane.visible = true; isPresentationMode = true;
                     } else if (isIndexUp && rotateTextures.length > 0) {
-                        tag.innerText = `INDEX: CAROUSEL ${currentRotateIndex + 1}`;
-                        tag.style.background = "#10b981";
-                        if (particles) particles.visible = false;
-                        imagePlane.visible = true;
-                        isPresentationMode = true;
-                        
-                        // Swipe Logic
+                        tag.innerText = `INDEX: CAROUSEL ${currentRotateIndex + 1}`; tag.style.background = "#10b981";
+                        if (particles) particles.visible = false; imagePlane.visible = true; isPresentationMode = true;
                         const deltaX = lm[8].x - lastHandX;
-                        if (!directionCooldown && Math.abs(deltaX) > 0.08) {
-                            changePhoto(deltaX > 0 ? -1 : 1);
-                        }
+                        if (!directionCooldown && Math.abs(deltaX) > 0.08) changePhoto(deltaX > 0 ? -1 : 1);
                         lastHandX = lm[8].x;
                     } else {
-                        tag.innerText = "OPEN: PARTICLES";
-                        tag.style.background = "#3b82f6";
-                        if (particles) particles.visible = true;
-                        imagePlane.visible = false;
-                        isPresentationMode = false;
+                        tag.innerText = "OPEN: PARTICLES"; tag.style.background = "#3b82f6";
+                        if (particles) particles.visible = true; imagePlane.visible = false; isPresentationMode = false;
                         const pinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y);
                         targetDispersion = THREE.MathUtils.clamp((pinch - 0.1) * 3, 0, 1);
                     }
                 }
                 ctx.restore();
             });
-
             cameraUtils = new Camera(video, { onFrame: async () => await hands.send({image: video}), width: 480, height: 360 });
             cameraUtils.start();
         }
