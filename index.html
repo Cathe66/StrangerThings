@@ -9,6 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        
         body { margin: 0; overflow: hidden; background-color: #000; color: white; font-family: 'Inter', sans-serif; }
         canvas { display: block; }
         .glass-panel { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); }
@@ -16,14 +18,54 @@
         .gesture-indicator { position: absolute; bottom: 15px; right: 15px; padding: 8px 18px; border-radius: 40px; font-size: 11px; font-weight: 900; box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
+        /* Selection Highlight */
         .selected-asset {
             border: 4px solid #ff69b4 !important;
-            box-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
             transform: scale(0.96);
+        }
+
+        /* --- ENTRANCE OVERLAY STYLES --- */
+        .stranger-font { font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; }
+        .bulb-light {
+            position: absolute; width: 6px; height: 6px; background: #fef3c7; border-radius: 50%;
+            box-shadow: 0 0 20px 5px #f59e0b; animation: flicker 3s infinite;
+        }
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; box-shadow: 0 0 20px 5px #f59e0b; }
+            20%, 24%, 55% { opacity: 0.2; box-shadow: none; }
+        }
+        #entrance-gate.fade-out { opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
+        .glitch-btn:hover { animation: btn-glitch 0.3s infinite; }
+        @keyframes btn-glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
         }
     </style>
 </head>
 <body>
+
+    <div id="entrance-gate" class="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 opacity-40 pointer-events-none">
+            <div class="bulb-light" style="top:15%; left:10%"></div>
+            <div class="bulb-light" style="top:25%; right:15%"></div>
+            <div class="bulb-light" style="bottom:30%; left:20%"></div>
+            <div class="bulb-light" style="top:60%; right:25%"></div>
+            <div class="bulb-light" style="bottom:15%; right:12%"></div>
+        </div>
+        <div class="relative z-10 text-center px-6">
+            <h2 class="stranger-font text-red-700 text-5xl md:text-8xl mb-12 filter drop-shadow-[0_0_25px_rgba(185,28,28,0.9)]">
+                WELCOME TO THE<br>UPSIDE DOWN
+            </h2>
+            <button onclick="enterTheRift()" class="glitch-btn px-12 py-5 border-4 border-red-800 text-red-600 font-black text-2xl hover:bg-red-800 hover:text-black transition-all duration-300 tracking-[0.4em] uppercase shadow-[0_0_30px_rgba(185,28,28,0.5)]">
+                ENTER THE RIFT
+            </button>
+        </div>
+    </div>
 
     <div id="loading" class="loading-overlay">
         <div class="text-center">
@@ -36,7 +78,7 @@
         <div class="glass-panel p-8 rounded-[2.5rem] pointer-events-auto max-w-sm shadow-2xl">
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                <h1 class="text-xl font-black tracking-tight">Hawkins <span class="text-blue-500">LAB PRO</span></h1>
+                <h1 class="text-xl font-black tracking-tight uppercase">Hawkins <span class="text-blue-500">Lab Pro</span></h1>
             </div>
             
             <div class="bg-blue-500/5 border border-blue-500/20 p-5 rounded-3xl mb-8">
@@ -50,11 +92,11 @@
             </div>
 
             <div class="space-y-4">
-                <button onclick="openAssetModal('single')" class="w-full bg-white/10 hover:bg-white/20 text-white transition-all py-4 rounded-2xl text-[11px] font-bold tracking-widest border border-white/10">
-                    SINGLE IMAGE MODE
+                <button onclick="openAssetModal('single')" class="w-full bg-white/10 hover:bg-white/20 text-white transition-all py-4 rounded-2xl text-[11px] font-bold tracking-widest border border-white/10 uppercase">
+                    Single Image Mode
                 </button>
-                <button onclick="openAssetModal('batch')" class="w-full bg-blue-600 hover:bg-blue-500 text-white transition-all py-5 rounded-2xl text-[11px] font-black tracking-widest shadow-lg shadow-blue-900/40">
-                    BATCH CAROUSEL MODE
+                <button onclick="openAssetModal('batch')" class="w-full bg-blue-600 hover:bg-blue-500 text-white transition-all py-5 rounded-2xl text-[11px] font-black tracking-widest shadow-lg shadow-blue-900/40 uppercase">
+                    Batch Carousel Mode
                 </button>
             </div>
         </div>
@@ -72,13 +114,10 @@
         <div class="glass-panel p-10 rounded-[3rem] w-full max-w-2xl border border-white/20 relative">
             <button onclick="closeAssetModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors">✕ CLOSE</button>
             <h2 id="modal-title" class="text-blue-500 font-black text-sm uppercase tracking-[0.4em] mb-8 text-center">Select Asset</h2>
-            
-            <div class="grid grid-cols-4 gap-4 mb-10 max-h-[50vh] overflow-y-auto pr-2 no-scrollbar" id="modal-gallery">
-            </div>
-            
+            <div class="grid grid-cols-4 gap-4 mb-10 max-h-[50vh] overflow-y-auto pr-2 no-scrollbar" id="modal-gallery"></div>
             <div class="flex justify-between items-center">
-                <p class="text-[9px] text-gray-500 tracking-widest uppercase">Mode: <span id="mode-hint" class="text-blue-400">Single</span></p>
-                <button onclick="clearBatch()" id="clear-btn" class="hidden text-[9px] text-pink-500 hover:text-pink-400 tracking-widest uppercase font-bold">Clear Batch</button>
+                <p class="text-[9px] text-gray-500 tracking-widest uppercase">Target: <span id="mode-hint" class="text-blue-400">Single</span></p>
+                <button onclick="clearBatch()" id="clear-btn" class="hidden text-[9px] text-pink-500 hover:text-pink-400 tracking-widest uppercase font-bold">Purge Sequence</button>
             </div>
         </div>
     </div>
@@ -104,7 +143,6 @@
             vAlpha = smoothstep(-1500.0, 1000.0, mvPosition.z);
         }
     </script>
-
     <script id="fragmentShader" type="x-shader/x-fragment">
         varying vec3 vColor;
         varying float vAlpha;
@@ -130,8 +168,16 @@
         let isPresentationMode = false, currentModalMode = 'single';
         let baseImageData = null, rotateTextures = [], currentRotateIndex = 0;
         let lastHandX = 0.5, directionCooldown = false;
-        let selectedPaths = new Map(); // Using Map to store { path: texture } for easy removal
+        let selectedPaths = new Map();
 
+        // Gateway Logic
+        function enterTheRift() {
+            const gate = document.getElementById('entrance-gate');
+            gate.classList.add('fade-out');
+            setTimeout(() => gate.remove(), 1500);
+        }
+
+        // Modal Logic
         function openAssetModal(mode) {
             currentModalMode = mode;
             document.getElementById('asset-modal').classList.remove('hidden');
@@ -139,13 +185,11 @@
             document.getElementById('clear-btn').style.display = (mode === 'batch') ? 'block' : 'none';
             renderGallery();
         }
-
         function closeAssetModal() { document.getElementById('asset-modal').classList.add('hidden'); }
 
         function renderGallery() {
             const gallery = document.getElementById('modal-gallery');
             gallery.innerHTML = '';
-            
             ASSETS.forEach(src => {
                 const img = document.createElement('img');
                 img.src = src;
@@ -154,12 +198,10 @@
                 img.onclick = () => handleAssetClick(src, img);
                 gallery.appendChild(img);
             });
-
             const plus = document.createElement('div');
             plus.className = "w-full aspect-square rounded-2xl bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 hover:border-blue-500 transition-all relative";
             plus.innerHTML = `<span class="text-3xl text-blue-500 font-thin">+</span><input type="file" id="local-upload" class="absolute inset-0 opacity-0 cursor-pointer" ${currentModalMode === 'batch' ? 'multiple' : ''}>`;
             gallery.appendChild(plus);
-
             document.getElementById('local-upload').onchange = (e) => handleLocalUpload(e);
         }
 
@@ -169,16 +211,13 @@
                 closeAssetModal();
             } else {
                 if (selectedPaths.has(src)) {
-                    // UNDO LOGIC: Remove from selection
                     selectedPaths.delete(src);
                     el.classList.remove('selected-asset');
                 } else {
-                    // SELECT LOGIC: Add to selection
                     const tex = await new THREE.TextureLoader().loadAsync(src);
                     selectedPaths.set(src, tex);
                     el.classList.add('selected-asset');
                 }
-                // Sync the actual textures array used by the 3D engine
                 rotateTextures = Array.from(selectedPaths.values());
                 document.getElementById('gesture-tag').innerText = `BATCH: ${rotateTextures.length}`;
             }
@@ -194,26 +233,20 @@
                 for (const f of files) {
                     const url = URL.createObjectURL(f);
                     const tex = await new THREE.TextureLoader().loadAsync(url);
-                    selectedPaths.set(url, tex); // Use blob URL as key for local files
+                    selectedPaths.set(url, tex);
                 }
                 rotateTextures = Array.from(selectedPaths.values());
-                document.getElementById('gesture-tag').innerText = `BATCH: ${rotateTextures.length}`;
-                renderGallery(); // Re-render to show potential new local assets or updated states
+                renderGallery();
             }
         }
 
         function clearBatch() {
-            rotateTextures = [];
-            selectedPaths.clear();
-            document.getElementById('gesture-tag').innerText = "BATCH CLEARED";
-            renderGallery();
+            rotateTextures = []; selectedPaths.clear(); renderGallery();
         }
 
-        // --- 3D Core Engine ---
+        // 3D Engine
         window.onload = async () => {
-            initThree();
-            initMediaPipe();
-            generateInitialCloud();
+            initThree(); initMediaPipe(); generateInitialCloud();
             document.getElementById('loading').style.opacity = '0';
             setTimeout(() => document.getElementById('loading').remove(), 1000);
             animate();
