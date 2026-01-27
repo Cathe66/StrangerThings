@@ -21,7 +21,7 @@
         .stranger-font { font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; }
         #entrance-gate.fade-out { opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
         
-
+        /* --- ENTRANCE STYLES --- */
         .alphabet-container { position: absolute; top: 15%; width: 100%; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; padding: 0 50px; }
         .letter-bulb { font-family: 'serif'; font-weight: bold; font-size: 2rem; color: #333; text-shadow: 0 0 2px rgba(255,255,255,0.2); transition: all 0.3s; }
         @keyframes bulb-glow {
@@ -31,7 +31,7 @@
         .glitch-btn:hover { animation: btn-glitch 0.3s infinite; }
         @keyframes btn-glitch { 0% { transform: translate(0); } 20% { transform: translate(-3px, 3px); } 40% { transform: translate(-3px, -3px); } 100% { transform: translate(0); } }
 
-  
+        /* --- NEON CARD PANEL (Left Side) --- */
         .card { --border: 4px; --rounded: 2.5rem; width: 400px; height: auto; border-radius: var(--rounded); display: flex; align-items: center; justify-content: center; position: relative; padding: var(--border); pointer-events: auto; }
         .card::before, .card::after {
             content: ""; z-index: -1; position: absolute; will-change: auto; width: 100%; height: 100%; border-radius: var(--rounded);
@@ -47,6 +47,16 @@
         .card-content { position: relative; width: 100%; border-radius: calc(var(--rounded) - 4px); overflow: hidden; z-index: 7; background-color: #191c29; padding: 2rem; }
 
 
+        .btn-retro {
+            height: 50px; width: 100%; background: #333; display: flex; justify-content: center; cursor: pointer; align-items: center;
+            font-family: Consolas, Courier New, monospace; border: solid #404c5d 1px; font-size: 14px;
+            color: rgb(161, 161, 161); transition: 500ms; border-radius: 5px; text-transform: uppercase; font-weight: bold;
+            background: linear-gradient(145deg, #2e2d2d, #212121);
+            box-shadow: -1px -5px 15px #41465b, 5px 5px 15px #41465b, inset 5px 5px 10px #212121, inset -5px -5px 10px #212121;
+        }
+        .btn-retro:hover { box-shadow: 1px 1px 13px #20232e, -1px -1px 13px #545b78; color: #d6d6d6; transition: 500ms; }
+        .btn-retro:active { box-shadow: 1px 1px 13px #20232e, -1px -1px 33px #545b78; color: #d6d6d6; transition: 100ms; }
+
         .btn-starry { display: flex; justify-content: center; align-items: center; width: 100%; overflow: hidden; height: 3.5rem; background-size: 300% 300%; cursor: pointer; backdrop-filter: blur(1rem); border-radius: 1rem; transition: 0.5s; animation: gradient_301 5s ease infinite; border: double 4px transparent; background-image: linear-gradient(#212121, #212121), linear-gradient(137.48deg, #ffdb3b 10%, #fe53bb 45%, #8f51ea 67%, #0044ff 87%); background-origin: border-box; background-clip: content-box, border-box; position: relative; }
         .container-stars-wrap { position: absolute; z-index: -1; width: 100%; height: 100%; overflow: hidden; transition: 0.5s; backdrop-filter: blur(1rem); border-radius: 1rem; }
         .stars-inner { position: relative; width: 200rem; height: 200rem; }
@@ -56,23 +66,20 @@
         .circle { width: 100%; height: 30px; filter: blur(2rem); animation: pulse_3011 4s infinite; z-index: -1; }
         .circle:nth-of-type(1) { background: rgba(254, 83, 186, 0.6); }
         .circle:nth-of-type(2) { background: rgba(142, 81, 234, 0.7); }
-        @keyframes animStarRotate { from { transform: rotate(360deg); } to { transform: rotate(0); } }
-        @keyframes gradient_301 { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes pulse_3011 { 0%, 100% { transform: scale(0.75); } 70% { transform: scale(1); } }
 
         .ok-btn-inner { font-size: 12px; font-weight: 900; letter-spacing: 5px; padding: 0.8rem 2rem; border-radius: 5rem; border: none; background-color: #000; color: #fff; cursor: pointer; width: 13rem; text-transform: uppercase; }
         .ok-container { position: relative; padding: 3px; background: linear-gradient(90deg, #03a9f4, #f441a5); border-radius: 5rem; transition: all 0.4s ease; display: inline-block; }
-        .ok-container:hover::before { content: ""; position: absolute; inset: 0; filter: blur(1.2em); background: linear-gradient(90deg, #03a9f4, #f441a5); z-index: -1; }
-
 
         .fire-wrapper { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
         .ember { position: absolute; width: 3px; height: 3px; background: #ffae00; border-radius: 50%; filter: drop-shadow(0 0 5px #ff5e00); animation: float-ember var(--d) infinite ease-in-out; opacity: 0; }
         @keyframes float-ember { 0% { transform: translate(0, 0) scale(0); opacity: 0; } 20% { opacity: 1; transform: translate(var(--x1), var(--y1)) scale(1.2); } 100% { transform: translate(var(--x2), var(--y2)) scale(0); opacity: 0; } }
-
-
         .gif-container-left { position: absolute; bottom: 20px; left: 20px; width: 150px; z-index: 10; }
         .gif-container-right { position: absolute; bottom: 20px; right: 20px; width: 150px; z-index: 10; }
 
+        @keyframes bg-spin { 25% { background-position: right 20% bottom 40%; } 75% { background-position: left 45% top 20%; } }
+        @keyframes animStarRotate { from { transform: rotate(360deg); } to { transform: rotate(0); } }
+        @keyframes gradient_301 { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes pulse_3011 { 0%, 100% { transform: scale(0.75); } 70% { transform: scale(1); } }
         .loading-overlay { position: fixed; inset: 0; background: #000; display: flex; align-items: center; justify-content: center; z-index: 300; transition: opacity 1s ease; }
         .gesture-indicator { position: absolute; bottom: 15px; right: 15px; padding: 8px 18px; border-radius: 40px; font-size: 11px; font-weight: 900; background: #2563eb; }
     </style>
@@ -113,11 +120,10 @@
                     <p class="text-[10px] text-gray-400 leading-relaxed"><b>Open Palm</b>: Disperse<br><b>Closed Hand</b>: Single View<br><b>Point Index</b>: Carousel</p>
                 </div>
                 <div class="space-y-4">
-                    <button class="btn-starry" type="button" onclick="openAssetModal('single')">
-                        <strong class="btn-text-strong">Single Image Mode</strong>
-                        <div class="container-stars-wrap"><div class="stars-inner"></div></div>
-                        <div class="btn-glow-layer"><div class="circle"></div><div class="circle"></div></div>
+                    <button onclick="openAssetModal('single')" class="btn-retro">
+                        Single Image Mode
                     </button>
+                    
                     <button class="btn-starry" type="button" onclick="openAssetModal('batch')">
                         <strong class="btn-text-strong">Batch Carousel Mode</strong>
                         <div class="container-stars-wrap"><div class="stars-inner"></div></div>
@@ -137,7 +143,7 @@
     </div>
 
     <div id="asset-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/90 backdrop-blur-xl">
-        <div class="glass-panel p-10 rounded-[3rem] w-full max-w-2xl border border-white/20 relative">
+        <div class="bg-black/80 backdrop-blur-2xl p-10 rounded-[3rem] w-full max-w-2xl border border-white/20 relative">
             <button onclick="closeAssetModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white uppercase font-bold text-xs">✕ Close</button>
             <h2 class="text-blue-500 font-black text-sm uppercase tracking-[0.4em] mb-8 text-center">Select Asset</h2>
             <div class="grid grid-cols-4 gap-4 mb-10 max-h-[50vh] overflow-y-auto pr-2 no-scrollbar" id="modal-gallery"></div>
@@ -154,6 +160,7 @@
     <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
 
     <script>
+
         const CONFIG = { maxParticles: 4000000, samplingRes: 2048, lerpSpeed: 0.15, leftThreshold: 0.3, rightThreshold: 0.7, imageScale: 120 };
         const FIXED_ASSETS = ["assets/Demogorgon.png", "assets/st.png", "assets/max.png", "assets/billy.png","assets/vecna.png","assets/max1.jpg", "assets/st1.png", "assets/ell.png", "assets/m.png", "assets/all.png","assets/hm.png", "assets/n.png", "assets/el.png", "assets/ste.png", "assets/ds.png" ];
         let localAssets = []; let scene, camera, renderer, particles, particleMaterial, imagePlane;
