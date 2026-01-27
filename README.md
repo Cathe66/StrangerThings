@@ -10,7 +10,7 @@
 
 ## 📺 OVERVIEW
 
-**AETHER 3D PRO** is not just a display system; it is a digital rift. It allows users to interact with physical light and matter (pixels) using only their hands—no peripherals required. 
+**3D PRO** is not just a display system; it is a digital rift. It allows users to interact with physical light and matter (pixels) using only their hands—no peripherals required. 
 
 By merging **Three.js** high-performance rendering with **MediaPipe's** neural hand tracking, I’ve created a bridge between our world and the digital void.
 
@@ -44,7 +44,7 @@ Point your index finger to the sky to activate the batch carousel.
 
 ## 🕹️ HOW TO OPERATE
 
-1. **INITIALIZE**: Open `demo.html` in a modern browser.
+1. **INITIALIZE**: Open `index.html` in a modern browser.
 2. **SYNC**: Allow camera access (The Lab needs to see you).
 3. **PARTICLE MODE**: Upload a single photo. Use a **PINCH** gesture to manipulate the rift.
 4. **CAROUSEL MODE**: Upload multiple photos. Point your **INDEX FINGER UP** to start.
@@ -65,4 +65,5 @@ The system uses GPU-accelerated shaders to handle millions of particles in real-
 *If you see the lights flickering, close the browser immediately.* *Created by [GHOSTBOO]. Stay curious, Nerds!*
 
 ---
+
 
