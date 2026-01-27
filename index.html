@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hawkins System</title>
+    <title>Hawkins Lab System</title>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
@@ -26,7 +26,7 @@
 
         .stranger-font { font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; }
         #entrance-gate.fade-out { opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
-
+        
         .alphabet-container {
             position: absolute; top: 15%; width: 100%; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; padding: 0 50px;
         }
@@ -54,7 +54,6 @@
 
     <div id="entrance-gate" class="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center overflow-hidden">
         <div class="alphabet-container" id="alphabet-bg"></div>
-
         <div class="relative z-10 text-center px-6">
             <h2 class="stranger-font text-red-700 text-5xl md:text-8xl mb-12 filter drop-shadow-[0_0_25px_rgba(185,28,28,0.9)]">
                 WELCOME TO THE<br>UPSIDE DOWN
@@ -110,12 +109,12 @@
 
     <div id="asset-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/90 backdrop-blur-xl">
         <div class="glass-panel p-10 rounded-[3rem] w-full max-w-2xl border border-white/20 relative">
-            <button onclick="closeAssetModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors">✕ CLOSE</button>
-            <h2 id="modal-title" class="text-blue-500 font-black text-sm uppercase tracking-[0.4em] mb-8 text-center">Select Asset</h2>
+            <button onclick="closeAssetModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest">✕ Close</button>
+            <h2 id="modal-title" class="text-blue-500 font-black text-sm uppercase tracking-[0.4em] mb-8 text-center">Select Research Asset</h2>
             <div class="grid grid-cols-4 gap-4 mb-10 max-h-[50vh] overflow-y-auto pr-2 no-scrollbar" id="modal-gallery"></div>
             <div class="flex justify-between items-center">
-                <p class="text-[9px] text-gray-500 tracking-widest uppercase">Target: <span id="mode-hint" class="text-blue-400">Single</span></p>
-                <button onclick="closeAssetModal()" id="ok-btn" class="hidden px-6 py-2 border border-blue-500 text-[11px] text-blue-400 hover:bg-blue-500 hover:text-white tracking-[0.2em] uppercase font-black transition-all">OK</button>
+                <p class="text-[9px] text-gray-500 tracking-widest uppercase">Target Mode: <span id="mode-hint" class="text-blue-400">Single</span></p>
+                <button onclick="closeAssetModal()" id="ok-btn" class="hidden px-8 py-2 border border-blue-500 text-[11px] text-blue-400 hover:bg-blue-500 hover:text-white tracking-[0.2em] uppercase font-black transition-all">OK</button>
             </div>
         </div>
     </div>
@@ -136,7 +135,7 @@
             vColor = aColor;
             vec3 pos = mix(aTarget, aRandom, uDispersion);
             vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-            gl_PointSize = aSize * (1800.0 / -mvPosition.z) * uPixelRatio;
+            gl_PointSize = aSize * (2000.0 / -mvPosition.z) * uPixelRatio;
             gl_Position = projectionMatrix * mvPosition;
             vAlpha = smoothstep(-1500.0, 1000.0, mvPosition.z);
         }
@@ -147,22 +146,21 @@
         void main() {
             float r = distance(gl_PointCoord, vec2(0.5));
             if (r > 0.5) discard;
-            float alpha = smoothstep(0.5, 0.1, r) * vAlpha;
+            float alpha = smoothstep(0.5, 0.2, r) * vAlpha;
             gl_FragColor = vec4(vColor, alpha);
         }
     </script>
 
     <script>
-        const CONFIG = { maxParticles: 4000000, samplingRes: 1024, lerpSpeed: 0.15, leftThreshold: 0.3, rightThreshold: 0.7, imageScale: 120 };
+        // High Density Configuration
+        const CONFIG = { maxParticles: 4000000, samplingRes: 2048, lerpSpeed: 0.15, leftThreshold: 0.3, rightThreshold: 0.7, imageScale: 140 };
         const FIXED_ASSETS = [
-            "assets/Demogorgon.png", "assets/st.png", "assets/max.png", "assets/billy.png","assets/vecna.png","assets/max1.jpg",
-            "assets/st1.png", "assets/ell.png", "assets/m.png", "assets/all.png","assets/hm.png",
+            "assets/Demogorgon.png", "assets/st.png", "assets/max.png", "assets/max1.png",
+            "assets/st1.png", "assets/ell.png", "assets/m.png", "assets/all.png",
             "assets/n.png", "assets/el.png", "assets/ste.png", "assets/ds.png"
         ];
         
-        // Track local uploads separately so they don't disappear when re-rendering modal
         let localAssets = []; 
-
         let scene, camera, renderer, particles, particleMaterial, imagePlane;
         let hands, cameraUtils;
         let targetDispersion = 0.5, currentDispersion = 1.0;
@@ -171,12 +169,11 @@
         let lastHandX = 0.5, directionCooldown = false;
         let selectedPaths = new Map();
 
-        // --- ENTRANCE ANIMATION ---
+        // Alphabet Wall Background
         function initAlphabetBg() {
             const container = document.getElementById('alphabet-bg');
             const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
             const colors = ["#f87171", "#fbbf24", "#34d399", "#60a5fa", "#a78bfa", "#f472b6"];
-            
             letters.forEach((l, i) => {
                 const span = document.createElement('span');
                 span.className = "letter-bulb";
@@ -193,7 +190,7 @@
             setTimeout(() => gate.remove(), 1500);
         }
 
-        // --- MODAL & GALLERY LOGIC ---
+        // Modal Logic
         function openAssetModal(mode) {
             currentModalMode = mode;
             document.getElementById('asset-modal').classList.remove('hidden');
@@ -206,10 +203,7 @@
         function renderGallery() {
             const gallery = document.getElementById('modal-gallery');
             gallery.innerHTML = '';
-            
-            // Render Fixed + Locally Uploaded assets
             const allAssets = [...FIXED_ASSETS, ...localAssets];
-            
             allAssets.forEach(src => {
                 const img = document.createElement('img');
                 img.src = src;
@@ -218,12 +212,10 @@
                 img.onclick = () => handleAssetClick(src, img);
                 gallery.appendChild(img);
             });
-
             const plus = document.createElement('div');
             plus.className = "w-full aspect-square rounded-2xl bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 hover:border-blue-500 transition-all relative";
             plus.innerHTML = `<span class="text-3xl text-blue-500 font-thin">+</span><input type="file" id="local-upload" class="absolute inset-0 opacity-0 cursor-pointer" multiple>`;
             gallery.appendChild(plus);
-
             document.getElementById('local-upload').onchange = (e) => handleLocalUpload(e);
         }
 
@@ -248,14 +240,12 @@
         async function handleLocalUpload(e) {
             const files = Array.from(e.target.files);
             if (files.length === 0) return;
-            
             for (const f of files) {
                 const url = URL.createObjectURL(f);
                 localAssets.push(url);
             }
-            renderGallery(); 
+            renderGallery();
         }
-
 
         window.onload = async () => {
             initAlphabetBg();
@@ -306,10 +296,17 @@
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
             const pixels = [];
-            for (let y = 0; y < canvas.height; y++) {
-                for (let x = 0; x < canvas.width; x++) {
+            const step = 1; 
+            for (let y = 0; y < canvas.height; y += step) {
+                for (let x = 0; x < canvas.width; x += step) {
                     const i = (y * canvas.width + x) * 4;
-                    if (data[i+3] > 128) pixels.push({ x: (x - canvas.width/2)*0.25, y: (canvas.height/2 - y)*0.25, r: data[i]/255, g: data[i+1]/255, b: data[i+2]/255 });
+                    if (data[i+3] > 50) {
+                        pixels.push({ 
+                            x: (x - canvas.width/2)*0.2, 
+                            y: (canvas.height/2 - y)*0.2, 
+                            r: data[i]/255, g: data[i+1]/255, b: data[i+2]/255 
+                        });
+                    }
                 }
             }
             return pixels;
@@ -323,9 +320,9 @@
             for (let i = 0; i < count; i++) {
                 const p = pixels[i];
                 targets[i*3] = p.x; targets[i*3+1] = p.y; targets[i*3+2] = 0;
-                randoms[i*3] = (Math.random()-0.5)*2000; randoms[i*3+1] = (Math.random()-0.5)*2000; randoms[i*3+2] = (Math.random()-0.5)*2000;
+                randoms[i*3] = (Math.random()-0.5)*2500; randoms[i*3+1] = (Math.random()-0.5)*2500; randoms[i*3+2] = (Math.random()-0.5)*2500;
                 colors[i*3] = p.r; colors[i*3+1] = p.g; colors[i*3+2] = p.b;
-                sizes[i] = 0.3 + Math.random() * 0.5;
+                sizes[i] = 0.25 + Math.random() * 0.4;
             }
             geometry.setAttribute('aTarget', new THREE.BufferAttribute(targets, 3));
             geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 3));
@@ -338,7 +335,7 @@
 
         function generateInitialCloud() {
             const dots = [];
-            for(let i=0; i<300000; i++) dots.push({x: (Math.random()-0.5)*250, y: (Math.random()-0.5)*200, r:0, g:0.1, b:0.4});
+            for(let i=0; i<500000; i++) dots.push({x: (Math.random()-0.5)*300, y: (Math.random()-0.5)*250, r:0, g:0.1, b:0.4});
             createParticleSystem(dots);
         }
 
@@ -358,7 +355,6 @@
                     const isFingersExtended = lm[8].y < lm[6].y && lm[12].y < lm[10].y && lm[16].y < lm[14].y;
                     const isFingersClosed = Math.abs(lm[8].x - lm[12].x) < 0.03 && Math.abs(lm[12].x - lm[16].x) < 0.03;
                     const isIndexUpOnly = lm[8].y < lm[6].y && lm[12].y > lm[10].y; 
-
                     if (isFingersExtended && isFingersClosed) {
                         tag.innerText = "CLOSED: SINGLE VIEW"; tag.style.background = "#ef4444";
                         if (particles) particles.visible = false; imagePlane.visible = true; isPresentationMode = true;
@@ -401,5 +397,3 @@
     </script>
 </body>
 </html>
-
-
