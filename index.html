@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hawkins Lab System</title>
+    <title>Hawkins System</title>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
@@ -15,7 +15,13 @@
         .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; z-index: 100; transition: opacity 1s ease; }
         .gesture-indicator { position: absolute; bottom: 15px; right: 15px; padding: 8px 18px; border-radius: 40px; font-size: 11px; font-weight: 900; box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        #modal-gallery { scrollbar-width: thin; scrollbar-color: rgba(59, 130, 246, 0.5) transparent; }
+        
+        /* 选中图片的粉色边框样式 */
+        .selected-asset {
+            border: 4px solid #ff69b4 !important;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
+            transform: scale(0.96);
+        }
     </style>
 </head>
 <body>
@@ -38,7 +44,7 @@
                 <p class="text-blue-400 font-bold text-[11px] mb-2 uppercase tracking-tighter">Gesture Control Specs</p>
                 <p class="text-[10px] text-gray-400 leading-relaxed">
                     - <b>Open Palm</b>: Disperse Particles<br>
-                    - <b>Clenched Fist</b>: Show Single Image<br>
+                    - <b>Closed Hand</b>: Show Single Image<br>
                     - <b>Point Index</b>: Activate Carousel<br>
                     - <b>Swipe Index</b>: Switch Images (L/R)
                 </p>
@@ -68,26 +74,13 @@
             <button onclick="closeAssetModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors">✕ CLOSE</button>
             <h2 id="modal-title" class="text-blue-500 font-black text-sm uppercase tracking-[0.4em] mb-8 text-center">Select Asset</h2>
             
-            <div class="grid grid-cols-4 gap-4 mb-10 max-h-[50vh] overflow-y-auto pr-2" id="modal-gallery">
-                <img src="assets/Demogorgon.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                <img src="assets/st.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                <img src="assets/max.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                <img src="assets/max1.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                <img src="assets/st1.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                <img src="assets/ell.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                <img src="assets/m.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                <img src="assets/all.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                <img src="assets/n.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                <img src="assets/el.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                <img src="assets/ste.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                <img src="assets/ds.png" class="w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover" onclick="handleAssetClick(this.src)">
-                
-                <div class="w-full aspect-square rounded-2xl bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 hover:border-blue-500 transition-all relative">
-                    <span class="text-3xl text-blue-500 font-thin">+</span>
-                    <input type="file" id="local-upload-input" class="absolute inset-0 opacity-0 cursor-pointer">
+            <div class="grid grid-cols-4 gap-4 mb-10 max-h-[50vh] overflow-y-auto pr-2 no-scrollbar" id="modal-gallery">
                 </div>
+            
+            <div class="flex justify-between items-center">
+                <p class="text-[9px] text-gray-500 tracking-widest uppercase">Mode: <span id="mode-hint" class="text-blue-400">Single</span></p>
+                <button onclick="clearBatch()" id="clear-btn" class="hidden text-[9px] text-pink-500 hover:text-pink-400 tracking-widest uppercase font-bold">Clear Batch</button>
             </div>
-            <p class="text-[9px] text-gray-500 text-center tracking-widest uppercase">System Restriction: <span id="mode-hint" class="text-blue-400">Single</span></p>
         </div>
     </div>
 
@@ -112,6 +105,7 @@
             vAlpha = smoothstep(-1500.0, 1000.0, mvPosition.z);
         }
     </script>
+
     <script id="fragmentShader" type="x-shader/x-fragment">
         varying vec3 vColor;
         varying float vAlpha;
@@ -125,34 +119,67 @@
 
     <script>
         const CONFIG = { maxParticles: 4000000, samplingRes: 1024, lerpSpeed: 0.15, leftThreshold: 0.3, rightThreshold: 0.7, imageScale: 120 };
+        const ASSETS = [
+            "assets/Demogorgon.png", "assets/st.png", "assets/max.png", "assets/max1.png",
+            "assets/st1.png", "assets/ell.png", "assets/m.png", "assets/all.png",
+            "assets/n.png", "assets/el.png", "assets/ste.png", "assets/ds.png"
+        ];
+
         let scene, camera, renderer, particles, particleMaterial, imagePlane;
         let hands, cameraUtils;
         let targetDispersion = 0.5, currentDispersion = 1.0;
         let isPresentationMode = false, currentModalMode = 'single';
         let baseImageData = null, rotateTextures = [], currentRotateIndex = 0;
         let lastHandX = 0.5, directionCooldown = false;
+        let selectedPaths = new Set();
 
+        // --- UI Modal & Gallery Logic ---
         function openAssetModal(mode) {
             currentModalMode = mode;
             document.getElementById('asset-modal').classList.remove('hidden');
-            document.getElementById('modal-title').innerText = mode === 'single' ? "SINGLE SELECTION" : "BATCH SEQUENCE";
             document.getElementById('mode-hint').innerText = mode.toUpperCase();
-            document.getElementById('local-upload-input').multiple = (mode === 'batch');
+            document.getElementById('clear-btn').style.display = (mode === 'batch') ? 'block' : 'none';
+            renderGallery();
         }
+
         function closeAssetModal() { document.getElementById('asset-modal').classList.add('hidden'); }
 
-        async function handleAssetClick(src) {
+        function renderGallery() {
+            const gallery = document.getElementById('modal-gallery');
+            gallery.innerHTML = '';
+            
+            ASSETS.forEach(src => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = "w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover";
+                if (currentModalMode === 'batch' && selectedPaths.has(src)) img.classList.add('selected-asset');
+                img.onclick = () => handleAssetClick(src, img);
+                gallery.appendChild(img);
+            });
+
+            // Local Upload Button (+)
+            const plus = document.createElement('div');
+            plus.className = "w-full aspect-square rounded-2xl bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 hover:border-blue-500 transition-all relative";
+            plus.innerHTML = `<span class="text-3xl text-blue-500 font-thin">+</span><input type="file" id="local-upload" class="absolute inset-0 opacity-0 cursor-pointer" ${currentModalMode === 'batch' ? 'multiple' : ''}>`;
+            gallery.appendChild(plus);
+
+            document.getElementById('local-upload').onchange = (e) => handleLocalUpload(e);
+        }
+
+        async function handleAssetClick(src, el) {
             if (currentModalMode === 'single') {
                 await loadPreset(src);
                 closeAssetModal();
             } else {
                 const tex = await new THREE.TextureLoader().loadAsync(src);
                 rotateTextures.push(tex);
-                document.getElementById('gesture-tag').innerText = `ADDED: ${rotateTextures.length}`;
+                selectedPaths.add(src);
+                el.classList.add('selected-asset');
+                document.getElementById('gesture-tag').innerText = `BATCH: ${rotateTextures.length}`;
             }
         }
 
-        document.getElementById('local-upload-input').addEventListener('change', async (e) => {
+        async function handleLocalUpload(e) {
             const files = Array.from(e.target.files);
             if (files.length === 0) return;
             if (currentModalMode === 'single') {
@@ -163,11 +190,19 @@
                     const tex = await new THREE.TextureLoader().loadAsync(URL.createObjectURL(f));
                     rotateTextures.push(tex);
                 }
-                document.getElementById('gesture-tag').innerText = `LOADED: ${rotateTextures.length}`;
+                document.getElementById('gesture-tag').innerText = `BATCH: ${rotateTextures.length}`;
                 closeAssetModal();
             }
-        });
+        }
 
+        function clearBatch() {
+            rotateTextures = [];
+            selectedPaths.clear();
+            document.getElementById('gesture-tag').innerText = "BATCH CLEARED";
+            renderGallery();
+        }
+
+        // --- 3D Core Engine ---
         window.onload = async () => {
             initThree();
             initMediaPipe();
@@ -254,6 +289,7 @@
             createParticleSystem(dots);
         }
 
+        // --- Gesture AI ---
         async function initMediaPipe() {
             const video = document.getElementById('input-video');
             const handCanvas = document.getElementById('hand-canvas');
@@ -267,13 +303,16 @@
                 ctx.drawImage(results.image, 0, 0, handCanvas.width, handCanvas.height);
                 if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                     const lm = results.multiHandLandmarks[0];
-                    const isFist = lm[8].y > lm[6].y && lm[12].y > lm[10].y && lm[16].y > lm[14].y;
-                    const isIndexUp = lm[8].y < lm[6].y && lm[12].y > lm[10].y && lm[16].y > lm[14].y;
+                    
+                    // Closed Hand Detection Logic (Pressed Fingers)
+                    const isFingersExtended = lm[8].y < lm[6].y && lm[12].y < lm[10].y && lm[16].y < lm[14].y;
+                    const isFingersClosed = Math.abs(lm[8].x - lm[12].x) < 0.03 && Math.abs(lm[12].x - lm[16].x) < 0.03;
+                    const isIndexUpOnly = lm[8].y < lm[6].y && lm[12].y > lm[10].y; 
 
-                    if (isFist) {
-                        tag.innerText = "FIST: SINGLE VIEW"; tag.style.background = "#ef4444";
+                    if (isFingersExtended && isFingersClosed) {
+                        tag.innerText = "CLOSED: SINGLE VIEW"; tag.style.background = "#ef4444";
                         if (particles) particles.visible = false; imagePlane.visible = true; isPresentationMode = true;
-                    } else if (isIndexUp && rotateTextures.length > 0) {
+                    } else if (isIndexUpOnly && rotateTextures.length > 0) {
                         tag.innerText = `INDEX: CAROUSEL ${currentRotateIndex + 1}`; tag.style.background = "#10b981";
                         if (particles) particles.visible = false; imagePlane.visible = true; isPresentationMode = true;
                         const deltaX = lm[8].x - lastHandX;
