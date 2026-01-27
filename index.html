@@ -58,11 +58,32 @@
             80% { transform: translate(3px, -3px); }
             100% { transform: translate(0); }
         }
+
+        /* --- STARFIELD EMBER EFFECTS (星空火花) --- */
+        .fire-wrapper {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            pointer-events: none; overflow: hidden;
+        }
+        .fire-particle {
+            position: absolute; width: 3px; height: 3px;
+            background: #ff5e00; border-radius: 50%;
+            filter: drop-shadow(0 0 5px #ffae00);
+            animation: float-ember var(--d) infinite ease-in-out;
+            opacity: 0;
+        }
+        @keyframes float-ember {
+            0% { transform: translate(0, 0) scale(0); opacity: 0; }
+            20% { opacity: 1; transform: translate(var(--x1), var(--y1)) scale(1.2); }
+            80% { opacity: 0.8; }
+            100% { transform: translate(var(--x2), var(--y2)) scale(0); opacity: 0; }
+        }
     </style>
 </head>
 <body>
 
     <div id="entrance-gate" class="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center overflow-hidden">
+        <div class="fire-wrapper" id="fire-container"></div>
+        
         <div class="alphabet-container" id="alphabet-bg"></div>
         <div class="relative z-10 text-center px-6">
             <h2 class="stranger-font text-red-700 text-5xl md:text-8xl mb-12 filter drop-shadow-[0_0_25px_rgba(185,28,28,0.9)]">
@@ -178,6 +199,33 @@
         let lastHandX = 0.5, directionCooldown = false;
         let selectedPaths = new Map();
 
+        function initFire() {
+            const container = document.getElementById('fire-container');
+            const count = 100; 
+            for(let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'fire-particle';
+                
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                
+
+                p.style.setProperty('--x1', (Math.random() * 50 - 25) + 'px');
+                p.style.setProperty('--y1', (Math.random() * -50 - 10) + 'px');
+                p.style.setProperty('--x2', (Math.random() * 100 - 50) + 'px');
+                p.style.setProperty('--y2', (Math.random() * -150 - 50) + 'px');
+
+                p.style.setProperty('--d', (Math.random() * 5 + 3) + 's');
+                p.style.animationDelay = Math.random() * 5 + 's';
+                
+
+                const colors = ['#ff4d00', '#e25822', '#ffae00', '#8b0000'];
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                container.appendChild(p);
+            }
+        }
+
         function initAlphabetBg() {
             const container = document.getElementById('alphabet-bg');
             const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -255,6 +303,7 @@
         }
 
         window.onload = async () => {
+            initFire();
             initAlphabetBg();
             initThree(); initMediaPipe(); generateInitialCloud();
             document.getElementById('loading').style.opacity = '0';
@@ -309,7 +358,6 @@
                     const i = (y * canvas.width + x) * 4;
                     if (data[i+3] > 50) {
                         pixels.push({ 
-                            // Reduced size: Multiplier changed from 0.12 to 0.06 to halve dimensions
                             x: (x - canvas.width/2)*0.12, 
                             y: (canvas.height/2 - y)*0.12, 
                             r: data[i]/255, g: data[i+1]/255, b: data[i+2]/255 
@@ -405,26 +453,16 @@
     </script>
 
     <script>
-
         document.addEventListener('contextmenu', event => event.preventDefault());
-
-
         document.onkeydown = function(e) {
-
             if (e.keyCode == 123) return false;
             if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
             if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
             if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
             if (e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false;
         };
-
-
         document.onselectstart = function() { return false; };
         document.oncopy = function() { return false; };
     </script>
 </body>
 </html>
-
-
-
-
