@@ -302,8 +302,8 @@
                     const i = (y * canvas.width + x) * 4;
                     if (data[i+3] > 50) {
                         pixels.push({ 
-                            x: (x - canvas.width/2)*0.15, 
-                            y: (canvas.height/2 - y)*0.15, 
+                            x: (x - canvas.width/2)*0.12, 
+                            y: (canvas.height/2 - y)*0.12, 
                             r: data[i]/255, g: data[i+1]/255, b: data[i+2]/255 
                         });
                     }
@@ -397,4 +397,5 @@
     </script>
 </body>
 </html>
+
 
