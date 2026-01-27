@@ -12,89 +12,226 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
         
         body { 
-            margin: 0; overflow: hidden; background-color: #000; color: white; font-family: 'Inter', sans-serif;
-            user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #000; 
+            color: white; 
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         canvas { display: block; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .selected-asset { border: 4px solid #ff69b4 !important; box-shadow: 0 0 20px rgba(255, 105, 180, 0.6); transform: scale(0.96); }
-        .stranger-font { font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; }
-        #entrance-gate.fade-out { opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
 
+        .glass-panel { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); }
 
-        .glass-panel { 
-            background: rgba(0, 0, 0, 0.85); 
-            backdrop-filter: blur(30px); 
+      
+        .marquee-border {
             position: relative;
             overflow: hidden;
-            border: 2px solid transparent;
-        }
-        .glass-panel::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: conic-gradient(transparent, #a78bfa, #3b82f6, transparent 30%); 
-            animation: rotate-border 4s linear infinite; z-index: -2;
-        }
-        .glass-panel::after {
-            content: ''; position: absolute; inset: 3px; background: rgba(10, 10, 10, 0.9);
-            border-radius: 2.3rem; z-index: -1;
+            background: rgba(0, 0, 0, 0.85); 
+            border: none;
         }
 
-        .camera-panel {
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+
+        .marquee-border::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                transparent, 
+                #3b82f6, 
+                #a78bfa, 
+                transparent 30%
+            );
+            animation: rotate-border 4s linear infinite;
+            z-index: -2;
+        }
+
+
+        .marquee-border::after {
+            content: '';
+            position: absolute;
+            inset: 3px; 
+            background: rgba(10, 10, 10, 0.95);
+            border-radius: 2.3rem;
+            z-index: -1;
+        }
+
+        @keyframes rotate-border {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; z-index: 100; transition: opacity 1s ease; }
+        .gesture-indicator { position: absolute; bottom: 15px; right: 15px; padding: 8px 18px; border-radius: 40px; font-size: 11px; font-weight: 900; box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .selected-asset {
+            border: 4px solid #ff69b4 !important;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
+            transform: scale(0.96);
+        }
+
+        .stranger-font { font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; }
+        #entrance-gate.fade-out { opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
+        
+        .alphabet-container {
+            position: absolute; top: 15%; width: 100%; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; padding: 0 50px;
+        }
+        .letter-bulb {
+            font-family: 'serif'; font-weight: bold; font-size: 2rem; color: #333;
+            text-shadow: 0 0 2px rgba(255,255,255,0.2); transition: all 0.3s;
+        }
+        @keyframes bulb-glow {
+            0%, 100% { filter: brightness(0.3) blur(0px); text-shadow: none; }
+            50% { filter: brightness(1.5) blur(1px); text-shadow: 0 0 15px currentColor, 0 0 30px currentColor; }
+        }
+
+        .glitch-btn:hover { animation: btn-glitch 0.3s infinite; }
+        @keyframes btn-glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+
+        .ember {
+            position: absolute; width: 3px; height: 3px;
+            background: #ffae00; border-radius: 50%;
+            filter: drop-shadow(0 0 5px #ff5e00);
+            animation: float-ember var(--d) infinite ease-in-out;
+            opacity: 0;
+        }
+        @keyframes float-ember {
+            0% { transform: translate(0, 0) scale(0); opacity: 0; }
+            20% { opacity: 1; transform: translate(var(--x1), var(--y1)) scale(1.2); }
+            80% { opacity: 0.8; }
+            100% { transform: translate(var(--x2), var(--y2)) scale(0); opacity: 0; }
+        }
+
+        .gif-container-left { position: absolute; bottom: 20px; left: 20px; width: 150px; z-index: 10; }
+        .gif-container-right { position: absolute; bottom: 20px; right: 20px; width: 150px; z-index: 10; }
+
+        .btn-starry {
+            display: flex; justify-content: center; align-items: center;
+            width: 100%; overflow: hidden; height: 3.5rem;
+            background-size: 300% 300%; cursor: pointer;
+            backdrop-filter: blur(1rem); border-radius: 1rem;
+            transition: 0.5s; animation: gradient_301 5s ease infinite;
+            border: double 4px transparent;
+            background-image: linear-gradient(#212121, #212121), linear-gradient(137.48deg, #ffdb3b 10%, #fe53bb 45%, #8f51ea 67%, #0044ff 87%);
+            background-origin: border-box; background-clip: content-box, border-box;
             position: relative;
         }
 
-
-        .meteor-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0; overflow: hidden;
-        }
-        .meteor {
-            position: absolute; width: 2px; height: 50px;
-            background: linear-gradient(to bottom, white, transparent);
-            opacity: 0; animation: meteor-fall 3s linear infinite;
-        }
-        @keyframes meteor-fall {
-            0% { transform: translateY(-100px) translateX(50px) rotate(-45deg); opacity: 0; }
-            10% { opacity: 1; }
-            30% { transform: translateY(400px) translateX(-200px) rotate(-45deg); opacity: 0; }
-            100% { opacity: 0; }
+        .container-stars-wrap {
+            position: absolute; z-index: -1; width: 100%; height: 100%;
+            overflow: hidden; transition: 0.5s; backdrop-filter: blur(1rem); border-radius: 1rem;
         }
 
-        @keyframes rotate-border { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .btn-text-strong {
+            z-index: 2; font-family: "Inter"; font-size: 11px;
+            letter-spacing: 2px; color: #ffffff; text-shadow: 0 0 4px white;
+            text-transform: uppercase; font-weight: 900;
+        }
 
-        /* --- BUTTONS & ELEMENTS --- */
-        .btn-starry { display: flex; justify-content: center; align-items: center; width: 100%; overflow: hidden; height: 3.5rem; background-size: 300% 300%; cursor: pointer; backdrop-filter: blur(1rem); border-radius: 1rem; transition: 0.5s; animation: gradient_301 5s ease infinite; border: double 4px transparent; background-image: linear-gradient(#212121, #212121), linear-gradient(137.48deg, #ffdb3b 10%, #fe53bb 45%, #8f51ea 67%, #0044ff 87%); background-origin: border-box; background-clip: content-box, border-box; position: relative; }
-        .container-stars-wrap { position: absolute; z-index: -1; width: 100%; height: 100%; overflow: hidden; transition: 0.5s; backdrop-filter: blur(1rem); border-radius: 1rem; }
-        .stars-inner { position: relative; width: 200rem; height: 200rem; }
-        .stars-inner::after { content: ""; position: absolute; inset: 0; animation: animStarRotate 90s linear infinite; background-image: radial-gradient(#ffffff 1px, transparent 1%); background-size: 50px 50px; }
-        .btn-text-strong { z-index: 2; font-size: 11px; letter-spacing: 2px; color: #fff; text-shadow: 0 0 4px white; text-transform: uppercase; font-weight: 900; }
-        .btn-retro { height: 50px; width: 100%; background: #333; display: flex; justify-content: center; cursor: pointer; align-items: center; font-family: Consolas, Courier New, monospace; border: solid #404c5d 1px; font-size: 14px; color: rgb(161, 161, 161); transition: 500ms; border-radius: 5px; text-transform: uppercase; font-weight: bold; background: linear-gradient(145deg, #2e2d2d, #212121); box-shadow: -1px -5px 15px #41465b, 5px 5px 15px #41465b, inset 5px 5px 10px #212121, inset -5px -5px 10px #212121; }
-        
-        .fire-wrapper { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-        .ember { position: absolute; width: 3px; height: 3px; background: #ffae00; border-radius: 50%; filter: drop-shadow(0 0 5px #ff5e00); animation: float-ember var(--d) infinite ease-in-out; opacity: 0; }
-        @keyframes float-ember { 0% { transform: translate(0, 0) scale(0); opacity: 0; } 20% { opacity: 1; transform: translate(var(--x1), var(--y1)) scale(1.2); } 100% { transform: translate(var(--x2), var(--y2)) scale(0); opacity: 0; } }
-        
+        .btn-glow-layer { position: absolute; display: flex; width: 100%; }
+        .circle { width: 100%; height: 30px; filter: blur(2rem); animation: pulse_3011 4s infinite; z-index: -1; }
+        .circle:nth-of-type(1) { background: rgba(254, 83, 186, 0.636); }
+        .circle:nth-of-type(2) { background: rgba(142, 81, 234, 0.704); }
+
+        .btn-starry:hover .container-stars-wrap { z-index: 1; background-color: #212121; }
+        .btn-starry:hover { transform: scale(1.02); }
+        .btn-starry:active { border: double 4px #fe53bb; animation: none; }
+
+        .stars-inner { position: relative; background: transparent; width: 200rem; height: 200rem; }
+        .stars-inner::after {
+            content: ""; position: absolute; top: -10rem; left: -100rem;
+            width: 100%; height: 100%; animation: animStarRotate 90s linear infinite;
+            background-image: radial-gradient(#ffffff 1px, transparent 1%); background-size: 50px 50px;
+        }
+
+        .btn-retro {
+            height: 50px; width: 100%; background: #333; justify-content: center; cursor: pointer;
+            align-items: center; font-family: Consolas, Courier New, monospace; border: solid #404c5d 1px;
+            font-size: 14px; color: rgb(161, 161, 161); transition: 500ms; border-radius: 5px;
+            background: linear-gradient(145deg, #2e2d2d, #212121);
+            box-shadow: -1px -5px 15px #41465b, 5px 5px 15px #41465b, inset 5px 5px 10px #212121, inset -5px -5px 10px #212121;
+            text-transform: uppercase; font-weight: bold;
+        }
+        .btn-retro:hover {
+            box-shadow: 1px 1px 13px #20232e, -1px -1px 13px #545b78; color: #d6d6d6; transition: 500ms;
+        }
+        .btn-retro:active {
+            box-shadow: 1px 1px 13px #20232e, -1px -1px 33px #545b78; color: #d6d6d6; transition: 100ms;
+        }
+
+        .ok-btn-inner {
+            font-size: 15px !important; 
+            font-weight: 900; 
+            letter-spacing: 5px; 
+            padding: 0.5rem 0.5rem !important;
+            border-radius: 5rem !important;
+            border: none; 
+            background-color: #000; 
+            color: #fff; 
+            cursor: pointer;
+            width: 5rem;
+            text-transform: uppercase;
+        }
+        .ok-container {
+            position: relative;
+            padding: 3px; 
+            background: linear-gradient(90deg, #03a9f4, #f441a5); 
+            border-radius: 5rem; 
+            transition: all 0.4s ease;
+            display: inline-block;
+        }
+        .ok-container::before {
+            content: "";
+            position: absolute;
+            inset: 0; margin: auto; 
+            border-radius: 5rem;
+            z-index: -10; 
+            filter: blur(0);
+            transition: filter 0.4s ease;
+        }
+        .ok-container:hover::before { background: linear-gradient(90deg, #03a9f4, #f441a5); filter: blur(1.2em); }
+
         @keyframes animStarRotate { from { transform: rotate(360deg); } to { transform: rotate(0); } }
         @keyframes gradient_301 { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes pulse_3011 { 0% { transform: scale(0.75); } 70% { transform: scale(1); } 100% { transform: scale(0.75); } }
-        .loading-overlay { position: fixed; inset: 0; background: #000; display: flex; align-items: center; justify-content: center; z-index: 300; transition: opacity 1s ease; }
-        .gesture-indicator { position: absolute; bottom: 15px; right: 15px; padding: 8px 18px; border-radius: 40px; font-size: 11px; font-weight: 900; background: #2563eb; }
+        @keyframes pulse_3011 { 0% { transform: scale(0.75); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); } 100% { transform: scale(0.75); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); } }
     </style>
 </head>
 <body>
 
     <div id="entrance-gate" class="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center overflow-hidden">
         <div class="fire-wrapper" id="fire-container"></div>
+        <div class="gif-container-left">
+            <div class="tenor-gif-embed" data-postid="1920796914246840111" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/smiling-henry-creel-stranger-things-smirking-pleased-gif-1920796914246840111">Smiling Henry Creel Sticker</a></div>
+        </div>
+        <div class="gif-container-right">
+            <div class="tenor-gif-embed" data-postid="10876026080113699763" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/smile-henry-creel-stranger-things-delighted-pleased-gif-10876026080113699763">Smile Henry Creel Sticker</a></div>
+        </div>
         <div class="alphabet-container" id="alphabet-bg"></div>
         <div class="relative z-10 text-center px-6">
-            <h2 class="stranger-font text-red-700 text-5xl md:text-8xl mb-12 filter drop-shadow-[0_0_25px_rgba(185,28,28,0.9)]">WELCOME TO THE<br>UPSIDE DOWN</h2>
-            <button onclick="enterTheRift()" class="glitch-btn px-12 py-5 border-4 border-red-800 text-red-600 font-black text-2xl hover:bg-red-800 hover:text-black transition-all duration-300 tracking-[0.4em] uppercase shadow-[0_0_30px_rgba(185,28,28,0.5)]">ENTER THE RIFT</button>
+            <h2 class="stranger-font text-red-700 text-5xl md:text-8xl mb-12 filter drop-shadow-[0_0_25px_rgba(185,28,28,0.9)]">
+                WELCOME TO THE<br>UPSIDE DOWN
+            </h2>
+            <button onclick="enterTheRift()" class="glitch-btn px-12 py-5 border-4 border-red-800 text-red-600 font-black text-2xl hover:bg-red-800 hover:text-black transition-all duration-300 tracking-[0.4em] uppercase shadow-[0_0_30px_rgba(185,28,28,0.5)]">
+                ENTER THE RIFT
+            </button>
         </div>
     </div>
+
+    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
 
     <div id="loading" class="loading-overlay">
         <div class="text-center">
@@ -104,39 +241,40 @@
     </div>
 
     <div class="fixed top-0 left-0 w-full p-8 z-10 flex flex-col md:flex-row justify-between items-start pointer-events-none">
-        <div class="glass-panel p-8 rounded-[2.5rem] pointer-events-auto max-w-sm shadow-2xl">
-            <div class="meteor-container">
-                <div class="meteor" style="left: 20%; animation-delay: 0s;"></div>
-                <div class="meteor" style="left: 50%; animation-delay: 1.5s;"></div>
-                <div class="meteor" style="left: 80%; animation-delay: 0.8s;"></div>
+        <div class="glass-panel marquee-border p-8 rounded-[2.5rem] pointer-events-auto max-w-sm shadow-2xl">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                <h1 class="text-xl font-black tracking-tight uppercase">Hawkins <span class="text-blue-500">Lab Pro</span></h1>
             </div>
-            
-            <div class="relative z-10">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                    <h1 class="text-xl font-black tracking-tight uppercase">Hawkins <span class="text-blue-500">Lab Pro</span></h1>
-                </div>
-                <div class="bg-blue-500/5 border border-blue-500/20 p-5 rounded-3xl mb-8">
-                    <p class="text-blue-400 font-bold text-[11px] mb-2 uppercase tracking-tighter">Gesture Control Specs</p>
-                    <p class="text-[10px] text-gray-400 leading-relaxed">
-                        - <b>Open Palm</b>: Disperse Particles<br>
-                        - <b>Closed Hand</b>: Show Single Image<br>
-                        - <b>Point Index</b>: Activate Carousel
-                    </p>
-                </div>
-                <div class="space-y-4">
-                    <button onclick="openAssetModal('single')" class="btn-retro">Single Image Mode</button>
-                    <button class="btn-starry" type="button" onclick="openAssetModal('batch')">
-                        <strong class="btn-text-strong">Batch Carousel Mode</strong>
-                        <div class="container-stars-wrap"><div class="stars-inner"></div></div>
-                        <div class="btn-glow-layer"><div class="circle"></div><div class="circle"></div></div>
-                    </button>
-                </div>
+            <div class="bg-blue-500/5 border border-blue-500/20 p-5 rounded-3xl mb-8">
+                <p class="text-blue-400 font-bold text-[11px] mb-2 uppercase tracking-tighter">Gesture Control Specs</p>
+                <p class="text-[10px] text-gray-400 leading-relaxed">
+                    - <b>Open Palm</b>: Disperse Particles<br>
+                    - <b>Closed Hand</b>: Show Single Image<br>
+                    - <b>Point Index</b>: Activate Carousel<br>
+                    - <b>Swipe Index</b>: Switch Images (L/R)
+                </p>
+            </div>
+            <div class="space-y-4">
+                <button onclick="openAssetModal('single')" class="btn-retro">
+                    Single Image Mode
+                </button>
+                
+                <button class="btn-starry" type="button" onclick="openAssetModal('batch')">
+                    <strong class="btn-text-strong">Batch Carousel Mode</strong>
+                    <div class="container-stars-wrap">
+                        <div class="stars-inner"></div>
+                    </div>
+                    <div class="btn-glow-layer">
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                    </div>
+                </button>
             </div>
         </div>
 
         <div class="flex flex-col items-end gap-6 pointer-events-auto">
-            <div class="camera-panel p-2 rounded-[2rem] overflow-hidden">
+            <div class="glass-panel p-2 rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden">
                 <video id="input-video" style="display:none"></video>
                 <canvas id="hand-canvas" width="220" height="165" class="rounded-[1.8rem]"></canvas>
                 <div id="gesture-tag" class="gesture-indicator bg-blue-600 text-white shadow-xl">READY</div>
@@ -146,32 +284,46 @@
 
     <div id="asset-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/90 backdrop-blur-xl">
         <div class="glass-panel p-10 rounded-[3rem] w-full max-w-2xl border border-white/20 relative">
-            <button onclick="closeAssetModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white uppercase font-bold text-xs tracking-widest">✕ Close</button>
+            <button onclick="closeAssetModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest">✕</button>
+            <h2 id="modal-title" class="text-blue-500 font-black text-sm uppercase tracking-[0.4em] mb-8 text-center">Select</h2>
             <div class="grid grid-cols-4 gap-4 mb-10 max-h-[50vh] overflow-y-auto pr-2 no-scrollbar" id="modal-gallery"></div>
+            <div class="flex justify-between items-center">
+                <p class="text-[9px] text-gray-500 tracking-widest uppercase">Target Mode: <span id="mode-hint" class="text-blue-400">Single</span></p>
+                <div id="ok-btn" class="hidden">
+                    <div class="ok-container">
+                        <button onclick="closeAssetModal()" class="ok-btn-inner">OK</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <canvas id="main-canvas"></canvas>
-    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
 
     <script>
         const CONFIG = { maxParticles: 4000000, samplingRes: 2048, lerpSpeed: 0.15, leftThreshold: 0.3, rightThreshold: 0.7, imageScale: 120 };
         const FIXED_ASSETS = ["assets/Demogorgon.png", "assets/st.png", "assets/max.png", "assets/billy.png","assets/vecna.png","assets/max1.jpg", "assets/st1.png", "assets/ell.png", "assets/m.png", "assets/all.png","assets/hm.png", "assets/n.png", "assets/el.png", "assets/ste.png", "assets/ds.png" ];
-        
         let localAssets = []; let scene, camera, renderer, particles, particleMaterial, imagePlane;
         let hands, cameraUtils; let targetDispersion = 0.5, currentDispersion = 1.0;
         let isPresentationMode = false, currentModalMode = 'single';
         let baseImageData = null, rotateTextures = [], currentRotateIndex = 0;
-        let lastHandX = 0.5, directionCooldown = false, selectedPaths = new Map();
+        let lastHandX = 0.5, directionCooldown = false;
+        let selectedPaths = new Map();
 
         function initFire() {
             const container = document.getElementById('fire-container');
-            for(let i = 0; i < 100; i++) {
-                const p = document.createElement('div'); p.className = 'ember';
-                p.style.left = Math.random() * 100 + '%'; p.style.top = Math.random() * 100 + '%';
-                p.style.setProperty('--x1', (Math.random() * 50 - 25) + 'px'); p.style.setProperty('--y1', (Math.random() * -50 - 10) + 'px');
-                p.style.setProperty('--x2', (Math.random() * 100 - 50) + 'px'); p.style.setProperty('--y2', (Math.random() * -150 - 50) + 'px');
-                p.style.setProperty('--d', (Math.random() * 5 + 3) + 's'); p.style.animationDelay = Math.random() * 5 + 's';
+            const count = 100; 
+            for(let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'ember';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.setProperty('--x1', (Math.random() * 50 - 25) + 'px');
+                p.style.setProperty('--y1', (Math.random() * -50 - 10) + 'px');
+                p.style.setProperty('--x2', (Math.random() * 100 - 50) + 'px');
+                p.style.setProperty('--y2', (Math.random() * -150 - 50) + 'px');
+                p.style.setProperty('--d', (Math.random() * 5 + 3) + 's');
+                p.style.animationDelay = Math.random() * 5 + 's';
                 container.appendChild(p);
             }
         }
@@ -181,53 +333,123 @@
             const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
             const colors = ["#f87171", "#fbbf24", "#34d399", "#60a5fa", "#a78bfa", "#f472b6"];
             letters.forEach((l, i) => {
-                const span = document.createElement('span'); span.className = "letter-bulb"; span.innerText = l;
-                span.style.color = colors[i % colors.length]; span.style.animation = `bulb-glow ${1.5 + Math.random() * 2}s infinite ${Math.random() * 2}s`;
+                const span = document.createElement('span');
+                span.className = "letter-bulb";
+                span.innerText = l;
+                span.style.color = colors[i % colors.length];
+                span.style.animation = `bulb-glow ${1.5 + Math.random() * 2}s infinite ${Math.random() * 2}s`;
                 container.appendChild(span);
             });
         }
 
-        function enterTheRift() { document.getElementById('entrance-gate').classList.add('fade-out'); setTimeout(() => document.getElementById('entrance-gate').remove(), 1500); }
-        function openAssetModal(mode) { currentModalMode = mode; document.getElementById('asset-modal').classList.remove('hidden'); renderGallery(); }
+        function enterTheRift() {
+            const gate = document.getElementById('entrance-gate');
+            gate.classList.add('fade-out');
+            setTimeout(() => gate.remove(), 1500);
+        }
+
+        function openAssetModal(mode) {
+            currentModalMode = mode;
+            document.getElementById('asset-modal').classList.remove('hidden');
+            document.getElementById('mode-hint').innerText = mode.toUpperCase();
+            document.getElementById('ok-btn').style.display = (mode === 'batch') ? 'block' : 'none';
+            renderGallery();
+        }
         function closeAssetModal() { document.getElementById('asset-modal').classList.add('hidden'); }
 
         function renderGallery() {
-            const gallery = document.getElementById('modal-gallery'); gallery.innerHTML = '';
+            const gallery = document.getElementById('modal-gallery');
+            gallery.innerHTML = '';
             const allAssets = [...FIXED_ASSETS, ...localAssets];
             allAssets.forEach(src => {
-                const img = document.createElement('img'); img.src = src; img.className = "w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover";
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = "w-full aspect-square rounded-2xl cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all object-cover";
                 if (currentModalMode === 'batch' && selectedPaths.has(src)) img.classList.add('selected-asset');
-                img.onclick = () => handleAssetClick(src, img); gallery.appendChild(img);
+                img.onclick = () => handleAssetClick(src, img);
+                gallery.appendChild(img);
             });
+            const plus = document.createElement('div');
+            plus.className = "w-full aspect-square rounded-2xl bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/10 hover:border-blue-500 transition-all relative";
+            plus.innerHTML = `<span class="text-3xl text-blue-500 font-thin">+</span><input type="file" id="local-upload" class="absolute inset-0 opacity-0 cursor-pointer" multiple>`;
+            gallery.appendChild(plus);
+            document.getElementById('local-upload').onchange = (e) => handleLocalUpload(e);
         }
 
         async function handleAssetClick(src, el) {
-            if (currentModalMode === 'single') { await loadPreset(src); closeAssetModal(); }
-            else { if (selectedPaths.has(src)) { selectedPaths.delete(src); el.classList.remove('selected-asset'); }
-            else { const tex = await new THREE.TextureLoader().loadAsync(src); selectedPaths.set(src, tex); el.classList.add('selected-asset'); }
-            rotateTextures = Array.from(selectedPaths.values()); }
+            if (currentModalMode === 'single') {
+                await loadPreset(src);
+                closeAssetModal();
+            } else {
+                if (selectedPaths.has(src)) {
+                    selectedPaths.delete(src);
+                    el.classList.remove('selected-asset');
+                } else {
+                    const tex = await new THREE.TextureLoader().loadAsync(src);
+                    selectedPaths.set(src, tex);
+                    el.classList.add('selected-asset');
+                }
+                rotateTextures = Array.from(selectedPaths.values());
+                document.getElementById('gesture-tag').innerText = `BATCH: ${rotateTextures.length}`;
+            }
+        }
+
+        async function handleLocalUpload(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            for (const f of files) {
+                const url = URL.createObjectURL(f);
+                localAssets.push(url);
+            }
+            renderGallery();
+        }
+
+        window.onload = async () => {
+            initFire(); initAlphabetBg(); initThree(); initMediaPipe(); generateInitialCloud();
+            document.getElementById('loading').style.opacity = '0';
+            setTimeout(() => document.getElementById('loading').remove(), 1000);
+            animate();
+        };
+
+        function initThree() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(25, window.innerWidth / window.innerHeight, 1, 15000);
+            camera.position.z = 500;
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('main-canvas'), antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            particleMaterial = new THREE.ShaderMaterial({
+                uniforms: { uTime: { value: 0 }, uDispersion: { value: 1.0 }, uPixelRatio: { value: renderer.getPixelRatio() } },
+                vertexShader: `uniform float uTime; uniform float uDispersion; uniform float uPixelRatio; attribute vec3 aTarget; attribute vec3 aRandom; attribute vec3 aColor; attribute float aSize; varying vec3 vColor; varying float vAlpha; void main() { vColor = aColor; vec3 pos = mix(aTarget, aRandom, uDispersion); vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0); gl_PointSize = aSize * (2000.0 / -mvPosition.z) * uPixelRatio; gl_Position = projectionMatrix * mvPosition; vAlpha = smoothstep(-1500.0, 1000.0, mvPosition.z); }`,
+                fragmentShader: `varying vec3 vColor; varying float vAlpha; void main() { float r = distance(gl_PointCoord, vec2(0.5)); if (r > 0.5) discard; float alpha = smoothstep(0.5, 0.2, r) * vAlpha; gl_FragColor = vec4(vColor, alpha); }`,
+                transparent: true, blending: THREE.NormalBlending, depthWrite: false
+            });
+            imagePlane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ transparent: true, side: THREE.DoubleSide }));
+            imagePlane.visible = false;
+            scene.add(imagePlane);
+            window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
         }
 
         async function loadPreset(url) {
             const img = new Image(); img.crossOrigin = "anonymous";
-            img.onload = async () => {
-                const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                const scale = Math.min(2048 / img.width, 2048 / img.height);
-                canvas.width = img.width * scale; canvas.height = img.height * scale;
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-                const pixels = [];
-                for (let y = 0; y < canvas.height; y += 1) {
-                    for (let x = 0; x < canvas.width; x += 1) {
-                        const i = (y * canvas.width + x) * 4;
-                        if (data[i+3] > 50) pixels.push({ x: (x - canvas.width/2)*0.12, y: (canvas.height/2 - y)*0.12, r: data[i]/255, g: data[i+1]/255, b: data[i+2]/255 });
-                    }
-                }
-                createParticleSystem(pixels);
-                imagePlane.material.map = await new THREE.TextureLoader().loadAsync(url);
-                imagePlane.material.needsUpdate = true;
-            };
+            img.onload = async () => { baseImageData = await processImage(img); createParticleSystem(baseImageData); imagePlane.material.map = await new THREE.TextureLoader().loadAsync(url); };
             img.src = url;
+        }
+
+        async function processImage(img) {
+            const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+            const scale = Math.min(CONFIG.samplingRes / img.width, CONFIG.samplingRes / img.height);
+            canvas.width = img.width * scale; canvas.height = img.height * scale;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            const pixels = []; const step = 1; 
+            for (let y = 0; y < canvas.height; y += step) {
+                for (let x = 0; x < canvas.width; x += step) {
+                    const i = (y * canvas.width + x) * 4;
+                    if (data[i+3] > 50) { pixels.push({ x: (x - canvas.width/2)*0.12, y: (canvas.height/2 - y)*0.12, r: data[i]/255, g: data[i+1]/255, b: data[i+2]/255 }); }
+                }
+            }
+            return pixels;
         }
 
         function createParticleSystem(pixels) {
@@ -236,65 +458,80 @@
             const geometry = new THREE.BufferGeometry();
             const targets = new Float32Array(count * 3), randoms = new Float32Array(count * 3), colors = new Float32Array(count * 3), sizes = new Float32Array(count);
             for (let i = 0; i < count; i++) {
-                const p = pixels[i]; targets[i*3] = p.x; targets[i*3+1] = p.y; targets[i*3+2] = 0;
+                const p = pixels[i];
+                targets[i*3] = p.x; targets[i*3+1] = p.y; targets[i*3+2] = 0;
                 randoms[i*3] = (Math.random()-0.5)*2500; randoms[i*3+1] = (Math.random()-0.5)*2500; randoms[i*3+2] = (Math.random()-0.5)*2500;
-                colors[i*3] = p.r; colors[i*3+1] = p.g; colors[i*3+2] = p.b; sizes[i] = 0.5;
+                colors[i*3] = p.r; colors[i*3+1] = p.g; colors[i*3+2] = p.b; sizes[i] = 0.25 + Math.random() * 0.4;
             }
             geometry.setAttribute('aTarget', new THREE.BufferAttribute(targets, 3));
             geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 3));
             geometry.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
             geometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
-            particles = new THREE.Points(geometry, particleMaterial); scene.add(particles);
+            geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(count * 3), 3));
+            particles = new THREE.Points(geometry, particleMaterial);
+            scene.add(particles);
+        }
+
+        function generateInitialCloud() {
+            const dots = []; for(let i=0; i<500000; i++) dots.push({x: (Math.random()-0.5)*300, y: (Math.random()-0.5)*250, r:0, g:0.1, b:0.4});
+            createParticleSystem(dots);
         }
 
         async function initMediaPipe() {
             const video = document.getElementById('input-video');
+            const handCanvas = document.getElementById('hand-canvas');
+            const ctx = handCanvas.getContext('2d');
+            const tag = document.getElementById('gesture-tag');
             hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-            hands.setOptions({ maxNumHands: 1, minDetectionConfidence: 0.8 });
+            hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.8 });
             hands.onResults((results) => {
-                const ctx = document.getElementById('hand-canvas').getContext('2d');
-                ctx.save(); ctx.clearRect(0, 0, 220, 165); ctx.scale(-1, 1); ctx.translate(-220, 0); ctx.drawImage(results.image, 0, 0, 220, 165);
+                ctx.clearRect(0, 0, handCanvas.width, handCanvas.height);
+                ctx.save(); ctx.scale(-1, 1); ctx.translate(-handCanvas.width, 0); ctx.drawImage(results.image, 0, 0, handCanvas.width, handCanvas.height);
                 if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                     const lm = results.multiHandLandmarks[0];
-                    const isFingersExtended = lm[8].y < lm[6].y && lm[12].y < lm[10].y;
-                    if (isFingersExtended) { particles.visible = false; imagePlane.visible = true; }
-                    else { particles.visible = true; imagePlane.visible = false; targetDispersion = 0.0; }
-                } else { targetDispersion = 1.0; }
+                    const isFingersExtended = lm[8].y < lm[6].y && lm[12].y < lm[10].y && lm[16].y < lm[14].y;
+                    const isFingersClosed = Math.abs(lm[8].x - lm[12].x) < 0.03 && Math.abs(lm[12].x - lm[16].x) < 0.03;
+                    const isIndexUpOnly = lm[8].y < lm[6].y && lm[12].y > lm[10].y; 
+                    if (isFingersExtended && isFingersClosed) {
+                        tag.innerText = "CLOSED: SINGLE VIEW"; tag.style.background = "#ef4444";
+                        if (particles) particles.visible = false; imagePlane.visible = true; isPresentationMode = true;
+                    } else if (isIndexUpOnly && rotateTextures.length > 0) {
+                        tag.innerText = `INDEX: CAROUSEL ${currentRotateIndex + 1}`; tag.style.background = "#10b981";
+                        if (particles) particles.visible = false; imagePlane.visible = true; isPresentationMode = true;
+                        const deltaX = lm[8].x - lastHandX; if (!directionCooldown && Math.abs(deltaX) > 0.08) changePhoto(deltaX > 0 ? -1 : 1); lastHandX = lm[8].x;
+                    } else {
+                        tag.innerText = "OPEN: PARTICLES"; tag.style.background = "#3b82f6";
+                        if (particles) particles.visible = true; imagePlane.visible = false; isPresentationMode = false;
+                        const pinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y);
+                        targetDispersion = THREE.MathUtils.clamp((pinch - 0.1) * 3, 0, 1);
+                    }
+                }
                 ctx.restore();
             });
             cameraUtils = new Camera(video, { onFrame: async () => await hands.send({image: video}), width: 480, height: 360 });
             cameraUtils.start();
         }
 
-        function initThree() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(25, window.innerWidth / window.innerHeight, 1, 15000);
-            camera.position.z = 500;
-            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('main-canvas'), antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            particleMaterial = new THREE.ShaderMaterial({
-                uniforms: { uDispersion: { value: 1.0 }, uPixelRatio: { value: window.devicePixelRatio } },
-                vertexShader: `uniform float uDispersion; attribute vec3 aTarget; attribute vec3 aRandom; attribute vec3 aColor; attribute float aSize; varying vec3 vColor; varying float vAlpha; void main() { vColor = aColor; vec3 pos = mix(aTarget, aRandom, uDispersion); vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0); gl_PointSize = aSize * (2000.0 / -mvPosition.z); gl_Position = projectionMatrix * mvPosition; vAlpha = smoothstep(-1500.0, 1000.0, mvPosition.z); }`,
-                fragmentShader: `varying vec3 vColor; varying float vAlpha; void main() { if (distance(gl_PointCoord, vec2(0.5)) > 0.5) discard; gl_FragColor = vec4(vColor, vAlpha); }`,
-                transparent: true, depthWrite: false
-            });
-            imagePlane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ transparent: true, side: THREE.DoubleSide }));
-            scene.add(imagePlane); imagePlane.visible = false;
+        function changePhoto(dir) {
+            if (rotateTextures.length === 0) return;
+            directionCooldown = true; currentRotateIndex = (currentRotateIndex + dir + rotateTextures.length) % rotateTextures.length;
+            imagePlane.material.map = rotateTextures[currentRotateIndex];
+            const aspect = rotateTextures[currentRotateIndex].image.width / rotateTextures[currentRotateIndex].image.height;
+            imagePlane.scale.set(CONFIG.imageScale * aspect, CONFIG.imageScale, 1);
+            setTimeout(() => directionCooldown = false, 800);
         }
 
-        function animate() { requestAnimationFrame(animate); currentDispersion += (targetDispersion - currentDispersion) * CONFIG.lerpSpeed; if(particleMaterial) particleMaterial.uniforms.uDispersion.value = currentDispersion; renderer.render(scene, camera); }
+        function animate() {
+            requestAnimationFrame(animate);
+            currentDispersion += (targetDispersion - currentDispersion) * CONFIG.lerpSpeed;
+            particleMaterial.uniforms.uDispersion.value = currentDispersion;
+            particleMaterial.uniforms.uTime.value = performance.now() * 0.001;
+            renderer.render(scene, camera);
+        }
 
-        window.onload = async () => {
-            initThree(); initFire(); initAlphabetBg();
-            const dots = []; for(let i=0; i<100000; i++) dots.push({x:(Math.random()-0.5)*400, y:(Math.random()-0.5)*300, r:0.1, g:0.2, b:0.5});
-            createParticleSystem(dots);
-            await initMediaPipe();
-            document.getElementById('loading').style.opacity = '0';
-            setTimeout(() => document.getElementById('loading').remove(), 1000);
-            animate();
-        };
-
-        window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && (e.keyCode == 'U'.charCodeAt(0) || e.keyCode == 'S'.charCodeAt(0)))) return false; };
+        document.onselectstart = function() { return false; }; document.oncopy = function() { return false; };
     </script>
 </body>
 </html>
