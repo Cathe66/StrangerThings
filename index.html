@@ -24,11 +24,9 @@
             transform: scale(0.96);
         }
 
-        /* --- ENTRANCE OVERLAY & ALPHABET BULBS --- */
         .stranger-font { font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; }
         #entrance-gate.fade-out { opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
-        
-        /* Letter Bulbs Container */
+
         .alphabet-container {
             position: absolute; top: 15%; width: 100%; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; padding: 0 50px;
         }
@@ -157,8 +155,8 @@
     <script>
         const CONFIG = { maxParticles: 4000000, samplingRes: 1024, lerpSpeed: 0.15, leftThreshold: 0.3, rightThreshold: 0.7, imageScale: 120 };
         const FIXED_ASSETS = [
-            "assets/Demogorgon.png", "assets/st.png", "assets/max.png", "assets/max1.png",
-            "assets/st1.png", "assets/ell.png", "assets/m.png", "assets/all.png",
+            "assets/Demogorgon.png", "assets/st.png", "assets/max.png", "assets/billy.png","assets/vecna.png",
+            "assets/st1.png", "assets/ell.png", "assets/m.png", "assets/all.png","assets/hm.png",
             "assets/n.png", "assets/el.png", "assets/ste.png", "assets/ds.png"
         ];
         
@@ -251,15 +249,14 @@
             const files = Array.from(e.target.files);
             if (files.length === 0) return;
             
-            // Just add to local assets list, don't select yet
             for (const f of files) {
                 const url = URL.createObjectURL(f);
                 localAssets.push(url);
             }
-            renderGallery(); // Update view to show new local items
+            renderGallery(); 
         }
 
-        // --- 3D ENGINE ---
+
         window.onload = async () => {
             initAlphabetBg();
             initThree(); initMediaPipe(); generateInitialCloud();
@@ -404,3 +401,4 @@
     </script>
 </body>
 </html>
+
