@@ -23,7 +23,51 @@
             -ms-user-select: none;
         }
         canvas { display: block; }
-        .glass-panel { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); }
+
+        /* --- 走马灯流光边框核心样式 --- */
+        .glass-panel { 
+            background: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(30px); 
+            position: relative;
+            overflow: hidden; /* 裁剪内部多余的渐变 */
+            border: 2px solid transparent; /* 预留边框空间 */
+        }
+
+        /* 旋转的渐变背景层 */
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                transparent, 
+                #3b82f6, /* 蓝色 */
+                #ef4444, /* 红色 */
+                transparent 30%
+            );
+            animation: rotate-border 4s linear infinite;
+            z-index: -2;
+        }
+
+        /* 内部黑色遮罩，用于露边产生边框感 */
+        .glass-panel::after {
+            content: '';
+            position: absolute;
+            inset: 3px; /* 边框厚度控制 */
+            background: rgba(10, 10, 10, 0.9);
+            border-radius: 2.3rem; /* 略小于父级圆角 */
+            z-index: -1;
+        }
+
+        @keyframes rotate-border {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* --------------------------------- */
+
         .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; z-index: 100; transition: opacity 1s ease; }
         .gesture-indicator { position: absolute; bottom: 15px; right: 15px; padding: 8px 18px; border-radius: 40px; font-size: 11px; font-weight: 900; box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -115,7 +159,6 @@
             background-image: radial-gradient(#ffffff 1px, transparent 1%); background-size: 50px 50px;
         }
 
- 
         .btn-retro {
             height: 50px; width: 100%; background: #333; justify-content: center; cursor: pointer;
             align-items: center; font-family: Consolas, Courier New, monospace; border: solid #404c5d 1px;
@@ -130,7 +173,6 @@
         .btn-retro:active {
             box-shadow: 1px 1px 13px #20232e, -1px -1px 33px #545b78; color: #d6d6d6; transition: 100ms;
         }
-
 
         .ok-btn-inner {
             font-size: 15px !important; 
@@ -231,6 +273,7 @@
                 </button>
             </div>
         </div>
+
         <div class="flex flex-col items-end gap-6 pointer-events-auto">
             <div class="glass-panel p-2 rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden">
                 <video id="input-video" style="display:none"></video>
@@ -259,18 +302,10 @@
     <canvas id="main-canvas"></canvas>
 
     <script>
-        // ... (JS逻辑部分分文未改) ...
         const CONFIG = { maxParticles: 4000000, samplingRes: 2048, lerpSpeed: 0.15, leftThreshold: 0.3, rightThreshold: 0.7, imageScale: 120 };
-        const FIXED_ASSETS = [
-             "assets/Demogorgon.png", "assets/st.png", "assets/max.png", "assets/billy.png","assets/vecna.png","assets/max1.jpg",
-            "assets/st1.png", "assets/ell.png", "assets/m.png", "assets/all.png","assets/hm.png",
-            "assets/n.png", "assets/el.png", "assets/ste.png", "assets/ds.png"
-        ];
-        
-        let localAssets = []; 
-        let scene, camera, renderer, particles, particleMaterial, imagePlane;
-        let hands, cameraUtils;
-        let targetDispersion = 0.5, currentDispersion = 1.0;
+        const FIXED_ASSETS = ["assets/Demogorgon.png", "assets/st.png", "assets/max.png", "assets/billy.png","assets/vecna.png","assets/max1.jpg", "assets/st1.png", "assets/ell.png", "assets/m.png", "assets/all.png","assets/hm.png", "assets/n.png", "assets/el.png", "assets/ste.png", "assets/ds.png" ];
+        let localAssets = []; let scene, camera, renderer, particles, particleMaterial, imagePlane;
+        let hands, cameraUtils; let targetDispersion = 0.5, currentDispersion = 1.0;
         let isPresentationMode = false, currentModalMode = 'single';
         let baseImageData = null, rotateTextures = [], currentRotateIndex = 0;
         let lastHandX = 0.5, directionCooldown = false;
@@ -501,10 +536,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
