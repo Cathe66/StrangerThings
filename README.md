@@ -7,6 +7,9 @@
 ![AI](https://img.shields.io/badge/Vision-MediaPipe-blue?style=for-the-badge)
 
 ---
+<p align="center">
+<img width="852" height="513"  alt="image" src="https://github.com/user-attachments/assets/d863884e-b514-44d5-85fb-3ea5e8dea642" />
+</p>
 
 ## 📺 OVERVIEW
 
