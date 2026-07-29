@@ -9,7 +9,8 @@
 
 ---
 <p align="center">
-<img width="852" height="513"  alt="image" src="https://github.com/user-attachments/assets/d863884e-b514-44d5-85fb-3ea5e8dea642" />
+<img width="852" height="513"  alt="image" src="https://github.com/user-attachments/assets/9c8fd674-7334-4c1f-b2bd-c906b8d500ef" 
+" />
 </p>
 
 ## 📺 OVERVIEW
